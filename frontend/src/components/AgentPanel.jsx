@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import {
   AlertTriangle,
   Check,
+  ChevronDown,
+  ChevronUp,
   Cpu,
   GitMerge,
   HeartPulse,
@@ -12,30 +14,36 @@ import {
 
 const MODULE_META = {
   clash: {
-    label: 'Clash Resolution',
+    label: 'Clash',
     icon: AlertTriangle,
-    badgeClass:
-      'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white',
+    tagClass: 'bg-gray-900 text-white dark:bg-white dark:text-black',
   },
   collaborate: {
-    label: 'Club Collaboration',
+    label: 'Collab',
     icon: GitMerge,
-    badgeClass:
-      'bg-teal-50 text-teal-800 border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-900/60',
+    tagClass: 'bg-teal-50 text-teal-800 border border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-900/50',
   },
   health: {
-    label: 'Club Revival Plan',
+    label: 'Revival',
     icon: HeartPulse,
-    badgeClass:
-      'bg-gray-100 text-gray-800 border-gray-300 dark:bg-[#1a1a1a] dark:text-gray-200 dark:border-[#2e2e2e]',
+    tagClass: 'bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1a1a1a] dark:text-gray-200 dark:border-[#2e2e2e]',
   },
   match: {
-    label: 'Volunteer Match',
+    label: 'Volunteer',
     icon: Users,
-    badgeClass:
-      'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/60',
+    tagClass: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50',
   },
 };
+
+function extractConfidenceBadge(scoreBreakdown = []) {
+  if (!Array.isArray(scoreBreakdown)) return null;
+  const aiItem = scoreBreakdown.find((b) => String(b.label || '').toLowerCase().includes('ai '));
+  return aiItem ? String(aiItem.points) : null;
+}
+
+function cleanLabel(label = '') {
+  return String(label).replace(/\s*\(perplexity\/[^)]+\)/i, '');
+}
 
 export default function AgentPanel({
   decisions = [],
@@ -47,176 +55,212 @@ export default function AgentPanel({
   runningAgent,
 }) {
   const [moduleFilter, setModuleFilter] = useState('all');
+  const [expandedIds, setExpandedIds] = useState(() => new Set());
+  const [showBrief, setShowBrief] = useState(false);
+
+  const allPending = useMemo(() => decisions.filter((d) => d.status === 'proposed'), [decisions]);
 
   const pendingDecisions = useMemo(() => {
-    return decisions
-      .filter((d) => d.status === 'proposed')
-      .filter((d) => (moduleFilter === 'all' ? true : d.agentModule === moduleFilter));
-  }, [decisions, moduleFilter]);
+    return allPending.filter((d) => (moduleFilter === 'all' ? true : d.agentModule === moduleFilter));
+  }, [allPending, moduleFilter]);
+
+  const toggleExpand = (id) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
-    <div className="space-y-5 animate-fadeIn">
-      {/* Sense -> Think -> Act Coordinator Brief (flat solid surface) */}
-      <div className="rounded-2xl border border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
-              <Cpu className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                  Agent Reasoning Loop (Sense → Think → Act → Explain)
-                </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
-                  {llmInfo?.configured ? `AI Model: ${llmInfo.model}` : 'Tool-Grounded Synthesizer'}
-                </span>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
-                {brief ||
-                  'Agent sensed live clubs, calendar windows, and volunteer skills. Review each explained proposal below and approve or reject to execute.'}
-              </p>
-            </div>
+    <div className="space-y-4 animate-fadeIn">
+      {/* Compact Toolbar Header */}
+      <div className="rounded-2xl border border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+            <Cpu className="w-4 h-4" />
           </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                Pending Proposals ({pendingDecisions.length})
+              </h3>
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
+                {llmInfo?.configured ? llmInfo.model : 'Tool-Grounded'}
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Review proposed actions below. Use Details to inspect evidence and scores.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {brief && (
+            <button
+              onClick={() => setShowBrief((v) => !v)}
+              className="px-3 py-2 rounded-xl border border-gray-200 dark:border-[#242424] bg-gray-50 dark:bg-[#111111] text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1 transition"
+            >
+              Summary {showBrief ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          )}
+
+          {/* Dropdown Filter */}
+          <select
+            value={moduleFilter}
+            onChange={(e) => setModuleFilter(e.target.value)}
+            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-[#242424] bg-gray-50 dark:bg-[#111111] text-xs font-semibold text-gray-800 dark:text-gray-200 focus:outline-none"
+          >
+            <option value="all">All Modules ({allPending.length})</option>
+            <option value="clash">Clashes</option>
+            <option value="collaborate">Collaborations</option>
+            <option value="health">Revival Plans</option>
+            <option value="match">Volunteer Matches</option>
+          </select>
 
           <button
             onClick={onRunAgent}
             disabled={runningAgent}
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-2 shrink-0 transition"
+            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 transition"
           >
-            <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
-            {runningAgent ? 'Sensing...' : 'Re-Run Agent Loop'}
+            <RefreshCw className={`w-3.5 h-3.5 ${runningAgent ? 'animate-spin' : ''}`} />
+            {runningAgent ? 'Sensing...' : 'Re-Run Agent'}
           </button>
         </div>
       </div>
 
-      {/* Filter Pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        {[
-          { id: 'all', label: 'All Pending' },
-          { id: 'clash', label: 'Clashes' },
-          { id: 'collaborate', label: 'Collaborations' },
-          { id: 'health', label: 'Revival Plans' },
-          { id: 'match', label: 'Volunteer Matches' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setModuleFilter(tab.id)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition ${
-              moduleFilter === tab.id
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white dark:bg-[#0a0a0a] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-[#1c1c1c] hover:border-blue-300'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      {/* Optional Collapsible Coordinator Summary */}
+      {showBrief && brief && (
+        <div className="rounded-xl border border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] px-4 py-3 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+          {brief}
+        </div>
+      )}
 
-      {/* Pending Proposals List */}
+      {/* Compact Proposal Cards with Expandable Dropdown */}
       {pendingDecisions.length === 0 ? (
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-10 text-center">
-          <Check className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
-          <h4 className="text-base font-bold text-gray-900 dark:text-white">All proposals resolved</h4>
+          <Check className="w-9 h-9 text-emerald-500 mx-auto mb-2.5" />
+          <h4 className="text-sm font-bold text-gray-900 dark:text-white">All proposals resolved</h4>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            No pending agent proposals in this category. Check the Decision Log for the full audit trail.
+            No pending items in this view. Check the Decision Log for the full audit trail.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-2.5">
           {pendingDecisions.map((item) => {
             const meta = MODULE_META[item.agentModule] || MODULE_META.clash;
             const Icon = meta.icon;
             const isBusy = busyDecisionId === item._id;
+            const isExpanded = expandedIds.has(item._id);
+            const confidence = extractConfidenceBadge(item.scoreBreakdown);
 
             return (
               <div
                 key={item._id}
-                className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-5 hover:border-blue-200 dark:hover:border-blue-900/50 transition"
+                className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl overflow-hidden transition-colors hover:border-gray-300 dark:hover:border-[#2a2a2a]"
               >
-                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                  <div className="space-y-3 flex-1">
-                    {/* Header badges */}
+                {/* Compact Primary Row */}
+                <div className="p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
+                  <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border flex items-center gap-1.5 ${meta.badgeClass}`}
+                        className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${meta.tagClass}`}
                       >
-                        <Icon className="w-3.5 h-3.5" />
+                        <Icon className="w-3 h-3" />
                         {meta.label}
                       </span>
-                      <span className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-gray-100 dark:bg-[#161616] text-gray-600 dark:text-gray-400">
-                        Status: Proposed (Awaiting Human)
-                      </span>
+                      {confidence && (
+                        <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 tabular-nums">
+                          {confidence} confidence
+                        </span>
+                      )}
                     </div>
 
-                    <h4 className="text-base font-bold text-gray-900 dark:text-white">{item.title}</h4>
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">{item.title}</h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1">{item.decision}</p>
+                  </div>
 
-                    {/* Proposed Action */}
-                    <div className="p-3.5 rounded-xl bg-gray-50 dark:bg-[#111111] border border-gray-100 dark:border-[#1c1c1c]">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-                        Proposed Action
-                      </p>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.decision}</p>
-                    </div>
+                  {/* Action Cluster + Dropdown Toggle */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => toggleExpand(item._id)}
+                      className="px-3 py-2 rounded-xl border border-gray-200 dark:border-[#262626] bg-gray-50 dark:bg-[#111111] hover:bg-gray-100 dark:hover:bg-[#1a1a1a] text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1 transition"
+                    >
+                      Details
+                      {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
 
-                    {/* Plain-Language Explainability */}
+                    <button
+                      onClick={() => onDecide(item._id, 'approved')}
+                      disabled={isBusy}
+                      className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      {isBusy ? 'Applying...' : 'Approve'}
+                    </button>
+
+                    <button
+                      onClick={() => onDecide(item._id, 'rejected')}
+                      disabled={isBusy}
+                      className="px-3 py-2 rounded-xl border border-gray-200 dark:border-[#262626] bg-white dark:bg-[#111111] hover:bg-gray-100 dark:hover:bg-[#1a1a1a] text-xs font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-1 transition"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      Reject
+                    </button>
+                  </div>
+                </div>
+
+                {/* Expandable Dropdown Details */}
+                {isExpanded && (
+                  <div className="border-t border-gray-100 dark:border-[#1c1c1c] bg-gray-50/70 dark:bg-[#0f0f0f] px-4 py-3.5 space-y-3">
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-                        Agent Explanation & Evidence
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                        Full Proposed Action
+                      </p>
+                      <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{item.decision}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                        Agent Reasoning & Evidence
                       </p>
                       <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">{item.reason}</p>
                     </div>
 
-                    {/* Recruitment Draft if present */}
                     {item.actionPayload?.recruitmentDraft && (
-                      <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-[#242424]">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
+                      <div className="p-3 rounded-xl bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#242424]">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
                           Drafted Recruitment Post
                         </p>
-                        <p className="text-xs text-gray-800 dark:text-gray-200 italic">
+                        <p className="text-xs text-gray-700 dark:text-gray-300 italic">
                           "{item.actionPayload.recruitmentDraft}"
                         </p>
                       </div>
                     )}
 
-                    {/* Score / Rule Breakdown */}
                     {Array.isArray(item.scoreBreakdown) && item.scoreBreakdown.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {item.scoreBreakdown.map((b, idx) => (
-                          <span
-                            key={idx}
-                            className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-[11px] font-medium text-blue-800 dark:text-blue-200"
-                          >
-                            {b.label}:{' '}
-                            <strong className="font-bold">
-                              {typeof b.points === 'number' && b.points > 0 ? `+${b.points}` : b.points}
-                            </strong>
-                          </span>
-                        ))}
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                          Score & Model Breakdown
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {item.scoreBreakdown.map((b, idx) => (
+                            <div
+                              key={idx}
+                              className="px-3 py-2 rounded-lg bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#222222] flex items-center justify-between gap-2 text-[11px]"
+                            >
+                              <span className="text-gray-600 dark:text-gray-300 truncate">{cleanLabel(b.label)}</span>
+                              <span className="font-bold text-gray-900 dark:text-white tabular-nums shrink-0">
+                                {typeof b.points === 'number' && b.points > 0 ? `+${b.points}` : b.points}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
-
-                  {/* Coordinator Controls */}
-                  <div className="flex sm:flex-row lg:flex-col gap-2.5 shrink-0 lg:w-44">
-                    <button
-                      onClick={() => onDecide(item._id, 'approved')}
-                      disabled={isBusy}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition"
-                    >
-                      <Check className="w-4 h-4" />
-                      {isBusy ? 'Applying...' : 'Approve & Execute'}
-                    </button>
-                    <button
-                      onClick={() => onDecide(item._id, 'rejected')}
-                      disabled={isBusy}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111111] hover:bg-gray-100 dark:hover:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-[#262626] hover:border-gray-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
-                    >
-                      <X className="w-4 h-4" />
-                      Reject
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
             );
           })}
