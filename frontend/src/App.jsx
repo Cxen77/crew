@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import {
   Calendar,
-  Command,
   Cpu,
   FileText,
   History,
@@ -42,7 +41,16 @@ export default function App() {
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('calendar');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
+
+  const handleToggleSidebar = () => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      setIsDesktopSidebarOpen((prev) => !prev);
+    } else {
+      setIsSidebarOpen((prev) => !prev);
+    }
+  };
 
   const [loading, setLoading] = useState(true);
   const [runningAgent, setRunningAgent] = useState(false);
@@ -182,18 +190,31 @@ export default function App() {
     <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-[#f5f5f5] flex flex-col font-sans">
       <Toaster position="top-center" toastOptions={{ duration: 3500 }} />
 
-      {/* Full-Width Top Navbar (Logo + Name + Read-only Status — No buttons) */}
+      {/* Full-Width Top Navbar (Menu toggle + Crew Sync Logo + Name + Read-only Status) */}
       <header className="sticky top-0 z-30 h-14 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#1c1c1c] px-4 sm:px-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="lg:hidden p-1.5 -ml-1 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]"
-            aria-label="Open navigation"
+            onClick={handleToggleSidebar}
+            className="p-1.5 -ml-1 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1a1a1a] transition"
+            aria-label="Toggle sidebar"
+            title="Toggle sidebar"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-            <Command className="w-4 h-4 text-white" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="w-4 h-4 text-white"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="8.5" cy="12" r="4.5" />
+              <circle cx="15.5" cy="12" r="4.5" />
+            </svg>
           </div>
           <div className="flex items-baseline gap-2.5">
             <span className="font-bold text-base text-gray-900 dark:text-white tracking-tight">
@@ -240,8 +261,12 @@ export default function App() {
 
         {/* Sidebar (All navigation + action buttons live here only) */}
         <aside
-          className={`fixed lg:sticky top-0 lg:top-14 h-screen lg:h-[calc(100vh-3.5rem)] w-64 bg-white dark:bg-[#0a0a0a] border-r border-gray-200 dark:border-[#1c1c1c] flex flex-col z-40 transition-transform duration-300 ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          className={`fixed lg:sticky top-0 lg:top-14 h-screen lg:h-[calc(100vh-3.5rem)] bg-white dark:bg-[#0a0a0a] border-gray-200 dark:border-[#1c1c1c] flex flex-col z-40 transition-all duration-200 shrink-0 ${
+            isSidebarOpen ? 'translate-x-0 w-64 border-r' : '-translate-x-full w-64 lg:translate-x-0'
+          } ${
+            isDesktopSidebarOpen
+              ? 'lg:w-64 lg:border-r'
+              : 'lg:w-0 lg:overflow-hidden lg:border-r-0'
           }`}
         >
           {/* Mobile Drawer Close */}
