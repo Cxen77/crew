@@ -33,13 +33,13 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
               className={`rounded-2xl border p-5 transition-colors flex flex-col justify-between ${
                 isQuiet
                   ? 'border-dashed border-gray-300 dark:border-[#2c2c2c] bg-gray-100/80 dark:bg-[#111111]'
-                  : 'border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] hover:border-blue-200 dark:hover:border-blue-900/50'
+                  : 'border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] hover:border-gray-300 dark:hover:border-[#2e2e2e]'
               }`}
             >
               <div>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div>
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                       {club.category}
                     </span>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-0.5">{club.name}</h3>
@@ -50,7 +50,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                       <Moon className="w-3 h-3" /> Quiet
                     </span>
                   ) : (
-                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 flex items-center gap-1">
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2c2c2c] flex items-center gap-1">
                       <Activity className="w-3 h-3" /> Healthy
                     </span>
                   )}
@@ -64,20 +64,14 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                 <div className="mb-4">
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="font-medium text-gray-500 dark:text-gray-400">Club Health Score</span>
-                    <span
-                      className={`font-bold tabular-nums ${
-                        score < 50
-                          ? 'text-gray-900 dark:text-white'
-                          : 'text-blue-600 dark:text-blue-400'
-                      }`}
-                    >
+                    <span className="font-bold tabular-nums text-gray-900 dark:text-white">
                       {score}/100
                     </span>
                   </div>
                   <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-[#1f1f1f] overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
-                        score < 50 ? 'bg-gray-500' : 'bg-blue-600'
+                        score < 50 ? 'bg-gray-500' : 'bg-gray-700 dark:bg-gray-400'
                       }`}
                       style={{ width: `${score}%` }}
                     />
@@ -90,13 +84,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                     <div className="flex items-center gap-1 text-[10px] text-gray-400 font-medium">
                       <CalendarClock className="w-3 h-3" /> Last Event
                     </div>
-                    <p
-                      className={`text-xs font-bold mt-1 ${
-                        (h.daysSinceLastEvent ?? 0) >= 60
-                          ? 'text-gray-900 dark:text-white'
-                          : 'text-gray-900 dark:text-white'
-                      }`}
-                    >
+                    <p className="text-xs font-bold mt-1 text-gray-900 dark:text-white">
                       {h.daysSinceLastEvent ?? 0}d ago
                     </p>
                   </div>
@@ -106,15 +94,11 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                       {isFalling ? (
                         <TrendingDown className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                       ) : (
-                        <TrendingUp className="w-3 h-3 text-blue-500" />
+                        <TrendingUp className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                       )}
                       Members
                     </div>
-                    <p
-                      className={`text-xs font-bold mt-1 ${
-                        isFalling ? 'text-gray-900 dark:text-white' : 'text-gray-900 dark:text-white'
-                      }`}
-                    >
+                    <p className="text-xs font-bold mt-1 text-gray-900 dark:text-white">
                       {h.startMemberCount ?? club.memberCount} → {h.currentMemberCount ?? club.memberCount}
                     </p>
                   </div>
@@ -134,7 +118,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                   {(club.tags || []).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 dark:bg-[#161616] text-blue-700 dark:text-gray-300 border border-blue-100 dark:border-[#262626]"
+                      className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 dark:bg-[#161616] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#262626]"
                     >
                       #{tag}
                     </span>
@@ -149,7 +133,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                   </span>
                   <button
                     onClick={() => onNavigateTab('agent')}
-                    className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-xs font-semibold text-gray-700 dark:text-gray-200 hover:underline"
                   >
                     View Plan →
                   </button>
@@ -158,7 +142,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
 
               {!isQuiet && club.recruitmentDraft && (
                 <div className="pt-3 border-t border-gray-100 dark:border-[#1c1c1c]">
-                  <p className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                  <p className="text-[11px] font-semibold text-gray-600 dark:text-gray-300 flex items-center gap-1">
                     <Users className="w-3.5 h-3.5" /> Revival Recruitment Draft Active
                   </p>
                 </div>

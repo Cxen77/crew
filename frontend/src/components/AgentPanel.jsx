@@ -21,7 +21,7 @@ const MODULE_META = {
   collaborate: {
     label: 'Collab',
     icon: GitMerge,
-    tagClass: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50',
+    tagClass: 'bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1a1a1a] dark:text-gray-200 dark:border-[#2e2e2e]',
   },
   health: {
     label: 'Revival',
@@ -31,7 +31,7 @@ const MODULE_META = {
   match: {
     label: 'Volunteer',
     icon: Users,
-    tagClass: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50',
+    tagClass: 'bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1a1a1a] dark:text-gray-200 dark:border-[#2e2e2e]',
   },
 };
 
@@ -78,7 +78,7 @@ export default function AgentPanel({
       {/* Compact Toolbar Header */}
       <div className="rounded-2xl border border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gray-900 dark:bg-[#1f1f1f] border border-gray-800 dark:border-[#2e2e2e] text-white flex items-center justify-center shrink-0">
             <Cpu className="w-4 h-4" />
           </div>
           <div>
@@ -86,7 +86,7 @@ export default function AgentPanel({
               <h3 className="text-sm font-bold text-gray-900 dark:text-white">
                 Pending Proposals ({pendingDecisions.length})
               </h3>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2e2e2e]">
                 {llmInfo?.configured ? llmInfo.model : 'Tool-Grounded'}
               </span>
             </div>
@@ -122,7 +122,7 @@ export default function AgentPanel({
           <button
             onClick={onRunAgent}
             disabled={runningAgent}
-            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 transition"
+            className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 transition"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${runningAgent ? 'animate-spin' : ''}`} />
             {runningAgent ? 'Sensing...' : 'Re-Run Agent'}
@@ -140,7 +140,7 @@ export default function AgentPanel({
       {/* Compact Proposal Cards with Expandable Dropdown */}
       {pendingDecisions.length === 0 ? (
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-10 text-center">
-          <Check className="w-9 h-9 text-blue-600 mx-auto mb-2.5" />
+          <Check className="w-9 h-9 text-gray-500 dark:text-gray-400 mx-auto mb-2.5" />
           <h4 className="text-sm font-bold text-gray-900 dark:text-white">All proposals resolved</h4>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             No pending items in this view. Check the Decision Log for the full audit trail.
@@ -171,7 +171,7 @@ export default function AgentPanel({
                         {meta.label}
                       </span>
                       {confidence && (
-                        <span className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 tabular-nums">
+                        <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 tabular-nums">
                           {confidence} confidence
                         </span>
                       )}
@@ -194,7 +194,7 @@ export default function AgentPanel({
                     <button
                       onClick={() => onDecide(item._id, 'approved')}
                       disabled={isBusy}
-                      className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                      className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2e2e2e] border border-gray-800 dark:border-[#363636] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition"
                     >
                       <Check className="w-3.5 h-3.5" />
                       {isBusy ? 'Applying...' : 'Approve'}
@@ -230,7 +230,7 @@ export default function AgentPanel({
 
                     {item.actionPayload?.recruitmentDraft && (
                       <div className="p-3 rounded-xl bg-white dark:bg-[#141414] border border-gray-200 dark:border-[#242424]">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                           Drafted Recruitment Post
                         </p>
                         <p className="text-xs text-gray-700 dark:text-gray-300 italic">

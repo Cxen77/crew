@@ -18,7 +18,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
           {roleMatches.length > 0 && (
             <button
               onClick={() => onNavigateTab('agent')}
-              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0"
+              className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] text-white text-xs font-semibold transition shrink-0"
             >
               Approve Assignments in Agent Panel
             </button>
@@ -27,7 +27,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
 
         {roleMatches.length === 0 ? (
           <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-8 text-center">
-            <CheckCircle2 className="w-9 h-9 text-blue-600 mx-auto mb-2.5" />
+            <CheckCircle2 className="w-9 h-9 text-gray-500 mx-auto mb-2.5" />
             <p className="text-sm font-bold text-gray-900 dark:text-white">All event volunteer roles filled</p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               No unfilled vacancies remain across scheduled events.
@@ -42,7 +42,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2a2a2a]">
                       {rm.clubName}
                     </span>
                     <h4 className="text-base font-bold text-gray-900 dark:text-white mt-1.5">
@@ -57,7 +57,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-bold shrink-0">
+                  <span className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2a2a2a] text-xs font-bold shrink-0">
                     {rm.vacanciesRemaining} Vacancy
                   </span>
                 </div>
@@ -86,7 +86,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                         c.hasConflict
                           ? 'border-gray-300 dark:border-[#2e2e2e] bg-gray-100 dark:bg-[#141414]'
                           : idx === 0
-                          ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20'
+                          ? 'border-gray-300 dark:border-[#303030] bg-gray-50 dark:bg-[#141414]'
                           : 'border-gray-100 dark:border-[#1c1c1c] bg-gray-50 dark:bg-[#111111]'
                       }`}
                     >
@@ -105,7 +105,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                               <AlertTriangle className="w-3 h-3" /> OVERLOADED
                             </span>
                           ) : idx === 0 ? (
-                            <span className="px-2 py-0.5 rounded-md bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md bg-gray-900 dark:bg-[#262626] border border-gray-800 dark:border-[#3a3a3a] text-white font-bold text-[10px] flex items-center gap-1">
                               <Award className="w-3 h-3" /> BEST FIT
                             </span>
                           ) : null}
@@ -125,7 +125,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                               b.points < 0
                                 ? 'bg-gray-200 dark:bg-[#222222] text-gray-900 dark:text-white'
                                 : b.points > 0
-                                ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
+                                ? 'bg-gray-100 dark:bg-[#1c1c1c] text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-[#2c2c2c]'
                                 : 'bg-gray-200 dark:bg-[#222] text-gray-600 dark:text-gray-400'
                             }`}
                           >
@@ -145,7 +145,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
       {/* Campus Volunteer Directory */}
       <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           <h3 className="text-sm font-bold text-gray-900 dark:text-white">
             Campus Volunteer Pool ({volunteers.length})
           </h3>
@@ -171,7 +171,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                 ))}
               </div>
               {v.assignedEventIds?.length > 0 && (
-                <p className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 mt-2">
+                <p className="text-[10px] font-semibold text-gray-600 dark:text-gray-300 mt-2">
                   Assigned: {v.assignedEventIds.map((e) => e.title || 'Event').join(', ')}
                 </p>
               )}

@@ -10,7 +10,7 @@ export default function DecisionLogView({ decisions = [] }) {
     <div className="space-y-5 animate-fadeIn">
       <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <History className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           <div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-white">
               Agent Audit Trail & Decision Log ({filtered.length})
@@ -28,7 +28,7 @@ export default function DecisionLogView({ decisions = [] }) {
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize border transition ${
                 statusFilter === st
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'bg-gray-900 text-white border-gray-800 dark:bg-[#242424] dark:text-white dark:border-[#383838]'
                   : 'bg-gray-50 dark:bg-[#111111] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-[#262626]'
               }`}
             >
@@ -59,9 +59,9 @@ export default function DecisionLogView({ decisions = [] }) {
                 <span
                   className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 capitalize ${
                     isApproved
-                      ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
+                      ? 'bg-gray-200 dark:bg-[#222222] text-gray-900 dark:text-white'
                       : isRejected
-                      ? 'bg-gray-100 dark:bg-[#1f1f1f] text-gray-600 dark:text-gray-400'
+                      ? 'bg-gray-100 dark:bg-[#181818] text-gray-500 dark:text-gray-400'
                       : 'bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300'
                   }`}
                 >

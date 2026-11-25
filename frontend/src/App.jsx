@@ -198,10 +198,10 @@ export default function App() {
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        {/* Brand Header (solid color, zero gradients) */}
+        {/* Brand Header (monochrome grey) */}
         <div className="p-5 border-b border-gray-200 dark:border-[#1c1c1c] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gray-900 dark:bg-[#1f1f1f] border border-gray-800 dark:border-[#2e2e2e] flex items-center justify-center">
               <Command className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -221,8 +221,8 @@ export default function App() {
 
         {/* Navigation */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
-          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 rounded-xl p-3 mb-4">
-            <p className="text-[11px] font-medium text-blue-800 dark:text-blue-300 leading-relaxed">
+          <div className="bg-gray-100 dark:bg-[#141414] border border-gray-200 dark:border-[#242424] rounded-xl p-3 mb-4">
+            <p className="text-[11px] font-medium text-gray-600 dark:text-gray-300 leading-relaxed">
               Coordinator control active: every agent proposal requires manual approval.
             </p>
           </div>
@@ -241,18 +241,18 @@ export default function App() {
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors border ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/50'
+                    ? 'bg-gray-100 text-gray-900 border-gray-200 dark:bg-[#1a1a1a] dark:text-white dark:border-[#2a2a2a]'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#141414] hover:text-gray-900 dark:hover:text-white border-transparent'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`} />
                   {item.label}
                 </span>
                 {item.badge !== null && item.badge !== undefined && (
                   <span
                     className={`text-[11px] font-semibold tabular-nums ${
-                      isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+                      isActive ? 'text-gray-900 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'
                     }`}
                   >
                     {item.badge}
@@ -270,7 +270,7 @@ export default function App() {
             className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#141414] border border-gray-200 dark:border-[#1c1c1c] transition"
           >
             <span className="flex items-center gap-2">
-              {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-blue-600" />}
+              {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-gray-700" />}
               {isDark ? 'Light Mode' : 'Dark Mode'}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-gray-400">{isDark ? 'Dark' : 'Light'}</span>
@@ -303,18 +303,18 @@ export default function App() {
           <button
             onClick={handleRunAgent}
             disabled={runningAgent}
-            className="px-3 py-1.5 rounded-xl bg-blue-600 text-white text-xs font-semibold flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-xl bg-gray-900 dark:bg-[#222222] border border-gray-800 dark:border-[#333333] text-white text-xs font-semibold flex items-center gap-1.5"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${runningAgent ? 'animate-spin' : ''}`} /> Sync
           </button>
         </div>
 
         <div className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-5">
-          {/* Compact Workspace Header (puts Shared Calendar right at the top) */}
+          {/* Compact Workspace Header */}
           <div className="rounded-2xl bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Campus Club Operations
                 </span>
                 <span className="text-gray-300 dark:text-gray-700">•</span>
@@ -343,20 +343,20 @@ export default function App() {
                 </div>
                 <div>
                   <span className="text-gray-400 block">Open Roles</span>
-                  <span className="text-base font-bold text-blue-600 dark:text-blue-400">
+                  <span className="text-base font-bold text-gray-900 dark:text-white">
                     {counts.openVolunteerRoles}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-400 block">Pending</span>
-                  <span className="text-base font-bold text-blue-600 dark:text-blue-400">{pendingCount}</span>
+                  <span className="text-base font-bold text-gray-900 dark:text-white">{pendingCount}</span>
                 </div>
               </div>
 
               <button
                 onClick={handleRunAgent}
                 disabled={runningAgent}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-2 transition disabled:opacity-60 shrink-0"
+                className="px-4 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] text-white text-xs font-semibold flex items-center gap-2 transition disabled:opacity-60 shrink-0"
               >
                 <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
                 {runningAgent ? 'Running Agent...' : 'Run Agent Sync'}

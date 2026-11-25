@@ -178,7 +178,7 @@ export default function CalendarView({
             onClick={() => setOnlyClashes((v) => !v)}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
               onlyClashes
-                ? 'bg-blue-600 text-white border-blue-600'
+                ? 'bg-gray-900 text-white border-gray-800 dark:bg-[#242424] dark:text-white dark:border-[#383838]'
                 : 'bg-gray-50 dark:bg-[#111111] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#242424] hover:border-gray-400'
             }`}
           >
@@ -214,7 +214,7 @@ export default function CalendarView({
 
           <button
             onClick={onOpenAddEvent}
-            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+            className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] text-white text-xs font-semibold flex items-center gap-1.5 transition"
           >
             <Plus className="w-4 h-4" />
             Schedule Event
@@ -252,7 +252,7 @@ export default function CalendarView({
                     onClick={() => setSelectedDayKey(cell.key)}
                     className={`min-h-[112px] p-2 cursor-pointer transition-colors flex flex-col ${
                       isSelected
-                        ? 'bg-blue-50/60 dark:bg-[#141923]'
+                        ? 'bg-gray-100/80 dark:bg-[#141414]'
                         : 'bg-white dark:bg-[#0a0a0a] hover:bg-gray-50 dark:hover:bg-[#111111]'
                     }`}
                   >
@@ -260,9 +260,9 @@ export default function CalendarView({
                       <span
                         className={`text-xs font-bold tabular-nums inline-flex items-center justify-center rounded-md px-1.5 py-0.5 ${
                           cell.isToday
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-gray-900 text-white dark:bg-[#2a2a2a] dark:text-white'
                             : isSelected
-                            ? 'text-blue-700 dark:text-blue-300'
+                            ? 'text-gray-900 dark:text-white'
                             : 'text-gray-700 dark:text-gray-300'
                         }`}
                       >
@@ -285,7 +285,7 @@ export default function CalendarView({
                           className={`px-1.5 py-1 rounded-md text-[10px] leading-tight truncate border ${
                             ev.hasClash
                               ? 'bg-gray-100 text-gray-900 border-gray-300 dark:bg-[#1c1c1c] dark:text-gray-100 dark:border-[#383838] font-semibold'
-                              : 'bg-blue-50 dark:bg-[#151b26] text-blue-900 dark:text-blue-200 border-blue-100 dark:border-[#243044] font-medium'
+                              : 'bg-gray-50 dark:bg-[#141414] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#242424] font-medium'
                           }`}
                           title={`${fmtTime(ev.startAt)} · ${ev.title} (${ev.venue})`}
                         >
@@ -341,7 +341,7 @@ export default function CalendarView({
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2a2a2a]">
                           {ev.clubId?.name || 'Club'}
                           {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
                         </span>
@@ -366,7 +366,7 @@ export default function CalendarView({
                       {openRolesCount > 0 && (
                         <button
                           onClick={() => onNavigateTab('volunteers')}
-                          className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                          className="text-[11px] font-semibold text-gray-700 dark:text-gray-300 hover:underline flex items-center gap-1"
                         >
                           <Users className="w-3 h-3" /> {openRolesCount} open volunteer role
                           {openRolesCount > 1 ? 's' : ''} →
@@ -408,12 +408,12 @@ export default function CalendarView({
                     >
                       <div className="flex items-center justify-between gap-2 mb-1.5">
                         <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300">
+                          <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300">
                             {ev.clubId?.name}
                             {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
                           </span>
                           {isCollab && (
-                            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 flex items-center gap-1">
                               <GitMerge className="w-3 h-3" /> Co-Hosted
                             </span>
                           )}
@@ -456,7 +456,7 @@ export default function CalendarView({
               </div>
               <button
                 onClick={() => onNavigateTab('agent')}
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+                className="text-xs font-semibold text-gray-700 dark:text-gray-200 hover:underline shrink-0"
               >
                 Resolve →
               </button>
@@ -476,7 +476,7 @@ export default function CalendarView({
               </div>
               <button
                 onClick={() => onNavigateTab('agent')}
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+                className="text-xs font-semibold text-gray-700 dark:text-gray-200 hover:underline shrink-0"
               >
                 Revival Plan →
               </button>

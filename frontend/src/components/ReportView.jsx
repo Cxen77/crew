@@ -120,7 +120,7 @@ export default function ReportView({ onReportGenerated }) {
           <button
             onClick={handleGenerate}
             disabled={generating || !selectedEventId}
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+            className="px-4 py-2.5 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 transition"
           >
             <FileCheck2 className="w-4 h-4" />
             {generating ? 'Generating...' : 'Generate Report'}
@@ -133,7 +133,7 @@ export default function ReportView({ onReportGenerated }) {
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Total Registered</span>
-            <Users className="w-4 h-4 text-blue-600" />
+            <Users className="w-4 h-4 text-gray-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.totalRegistered}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">Verified participant rows</p>
@@ -142,9 +142,9 @@ export default function ReportView({ onReportGenerated }) {
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Attended</span>
-            <UserCheck className="w-4 h-4 text-blue-600" />
+            <UserCheck className="w-4 h-4 text-gray-500" />
           </div>
-          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
             {totals.attended}{' '}
             <span className="text-sm font-semibold text-gray-500">({totals.attendanceRate}%)</span>
           </p>
@@ -154,7 +154,7 @@ export default function ReportView({ onReportGenerated }) {
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Teams & Auto-Teams</span>
-            <Layers className="w-4 h-4 text-blue-600" />
+            <Layers className="w-4 h-4 text-gray-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.teams}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">
@@ -165,7 +165,7 @@ export default function ReportView({ onReportGenerated }) {
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Solo Registrants</span>
-            <CheckCircle2 className="w-4 h-4 text-blue-600" />
+            <CheckCircle2 className="w-4 h-4 text-gray-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.solo}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">Individual participants</p>
@@ -177,10 +177,10 @@ export default function ReportView({ onReportGenerated }) {
         <div className="lg:col-span-2 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-6">
           <div className="flex items-center justify-between gap-2 pb-4 border-b border-gray-100 dark:border-[#1c1c1c]">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <h3 className="text-sm font-bold text-gray-900 dark:text-white">One-Page Executive Event Report</h3>
               {metaProvider && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 dark:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-[#2a2a2a]">
                   {metaProvider}
                 </span>
               )}
@@ -188,7 +188,7 @@ export default function ReportView({ onReportGenerated }) {
             {reportMarkdown && (
               <button
                 onClick={handleDownloadMarkdown}
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-gray-700 dark:text-gray-300 hover:underline flex items-center gap-1"
               >
                 <Download className="w-3.5 h-3.5" /> Save .md
               </button>
