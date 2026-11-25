@@ -194,9 +194,12 @@ export async function craftCollaborationPitch({
 
   const fallback = () => {
     if (mode === 'merge_clash') {
+      const isMusicDance = [clubA.category, clubB.category].some((c) => /music|dance/i.test(c));
+      const eventLabel = isMusicDance ? 'Music & Dance Night' : `${clubA.name} × ${clubB.name} Joint Showcase`;
       return {
-        title: `Merge Clash: ${clubA.name} × ${clubB.name} Joint Music & Dance Night`,
-        decision: `Merge "${clashingEvents[0].title}" and "${clashingEvents[1].title}" into one co-hosted "Music & Dance Night" at ${suggestedSlot.venue} (${suggestedSlot.windowLabel}).`,
+        title: `Merge Clash: ${clubA.name} × ${clubB.name} Joint ${eventLabel}`,
+        mergedTitle: `${clubA.name} × ${clubB.name}: ${eventLabel}`,
+        decision: `Merge "${clashingEvents[0].title}" and "${clashingEvents[1].title}" into one co-hosted "${eventLabel}" at ${suggestedSlot.venue} (${suggestedSlot.windowLabel}).`,
         reason: `Both events share ${suggestedSlot.venue} during overlapping evening hours, and ${clubA.name} + ${clubB.name} score ${score} pts on collaboration fit (${breakdown.map((b) => `${b.label} +${b.points}`).join(', ')}). Merging eliminates the clash and doubles audience reach.`,
         recruitmentDraft: '',
       };

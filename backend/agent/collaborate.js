@@ -112,7 +112,7 @@ export async function generateCollaborationSuggestions({ clubs, events, clashes,
   const suggestions = [];
   const pairedClubKeys = new Set();
 
-  // 1. Check clashing events between complementary clubs -> propose MERGE into joint event
+  // 1. Check clashing events between complementary performing/cultural/community clubs -> propose MERGE
   for (const clash of clashes) {
     if (clash.clashType !== 'venue_time_clash') continue;
     const clubA = clubMap.get(clash.eventA.clubId);
@@ -120,7 +120,10 @@ export async function generateCollaborationSuggestions({ clubs, events, clashes,
     if (!clubA || !clubB) continue;
 
     const { score, sharedTags, breakdown } = scoreClubPair(clubA, clubB, true);
-    if (score < 40) continue;
+    const hasCulturalOrStageOverlap = sharedTags.some((t) =>
+      ['stage', 'cultural', 'performing-arts', 'evening-showcase', 'community', 'wellness'].includes(t)
+    );
+    if (score < 40 || !hasCulturalOrStageOverlap) continue;
 
     const pairKey = [String(clubA._id), String(clubB._id)].sort().join(':');
     pairedClubKeys.add(pairKey);
@@ -154,7 +157,7 @@ export async function generateCollaborationSuggestions({ clubs, events, clashes,
       breakdown,
       suggestedSlot,
       clashingEventIds: [clash.eventA._id, clash.eventB._id],
-      mergedTitle: `${clubA.name} × ${clubB.name}: Music & Dance Night`,
+      mergedTitle: pitch.mergedTitle || `${clubA.name} × ${clubB.name}: Joint Showcase Night`,
       ...pitch,
     });
   }
