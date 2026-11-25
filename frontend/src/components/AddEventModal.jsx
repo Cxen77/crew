@@ -189,7 +189,7 @@ export default function AddEventModal({ isOpen, onClose, clubs = [], venues = []
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] disabled:opacity-60 text-white text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold"
             >
               {submitting ? 'Scheduling...' : 'Create & Check Clashes'}
             </button>

@@ -157,7 +157,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
           {roleMatches.length > 0 && (
             <button
               onClick={() => onNavigateTab('agent')}
-              className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-[#222222] dark:hover:bg-[#2c2c2c] border border-gray-800 dark:border-[#333333] text-white text-xs font-semibold transition shrink-0"
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0"
             >
               Review in Agent Proposals →
             </button>
