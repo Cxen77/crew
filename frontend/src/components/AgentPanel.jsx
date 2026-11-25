@@ -210,7 +210,7 @@ export default function AgentPanel({
                     <button
                       onClick={() => onDecide(item._id, 'rejected')}
                       disabled={isBusy}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111111] hover:bg-orange-50 dark:hover:bg-orange-950/30 text-gray-700 dark:text-gray-300 hover:text-orange-700 border border-gray-200 dark:border-[#262626] hover:border-orange-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111111] hover:bg-gray-100 dark:hover:bg-[#1a1a1a] text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-[#262626] hover:border-gray-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                     >
                       <X className="w-4 h-4" />
                       Reject

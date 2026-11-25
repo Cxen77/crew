@@ -94,7 +94,7 @@ export default function CalendarView({
           </div>
           <button
             onClick={() => onNavigateTab('agent')}
-            className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition shrink-0"
+            className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 text-white text-xs font-semibold transition shrink-0"
           >
             Review Revival Plan
           </button>
@@ -119,7 +119,7 @@ export default function CalendarView({
           </div>
           <button
             onClick={() => onNavigateTab('agent')}
-            className="px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold transition shrink-0"
+            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0"
           >
             Resolve in Agent Panel
           </button>
@@ -153,8 +153,8 @@ export default function CalendarView({
             onClick={() => setOnlyClashes((v) => !v)}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
               onlyClashes
-                ? 'bg-orange-600 text-white border-orange-600'
-                : 'bg-gray-50 dark:bg-[#111111] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#262626] hover:border-orange-300'
+                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white'
+                : 'bg-gray-50 dark:bg-[#111111] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#262626] hover:border-gray-400'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
@@ -187,7 +187,6 @@ export default function CalendarView({
                   : 'bg-white dark:bg-[#0a0a0a] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#1c1c1c] hover:border-blue-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${isQuiet ? 'bg-gray-400' : 'bg-emerald-500'}`} />
               {c.name}
               {isQuiet && <span className="text-[10px] uppercase tracking-wider font-bold">(Quiet)</span>}
             </button>
