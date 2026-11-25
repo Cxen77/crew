@@ -221,12 +221,6 @@ export default function App() {
 
         {/* Navigation */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
-          <div className="bg-gray-100 dark:bg-[#141414] border border-gray-200 dark:border-[#242424] rounded-xl p-3 mb-4">
-            <p className="text-[11px] font-medium text-gray-600 dark:text-gray-300 leading-relaxed">
-              Coordinator control active: every agent proposal requires manual approval.
-            </p>
-          </div>
-
           <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Workspace</p>
 
           {navItems.map((item) => {
