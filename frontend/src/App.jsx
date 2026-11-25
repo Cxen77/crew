@@ -143,28 +143,24 @@ export default function App() {
       label: 'Shared Calendar',
       icon: Calendar,
       badge: counts.clashes > 0 ? `${counts.clashes} clash` : null,
-      badgeColor: 'bg-gray-900 text-white dark:bg-white dark:text-black',
     },
     {
       id: 'agent',
       label: 'Agent Proposals',
       icon: Cpu,
       badge: pendingCount > 0 ? pendingCount : null,
-      badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
     },
     {
       id: 'clubs',
       label: 'Clubs & Health',
       icon: LayoutGrid,
       badge: counts.quietClubs > 0 ? `${counts.quietClubs} quiet` : null,
-      badgeColor: 'bg-gray-200 text-gray-800 dark:bg-[#222222] dark:text-gray-200',
     },
     {
       id: 'volunteers',
       label: 'Volunteer Match',
       icon: Users,
       badge: counts.openVolunteerRoles > 0 ? counts.openVolunteerRoles : null,
-      badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
     },
     { id: 'reports', label: 'Event Reports', icon: FileText, badge: null },
     {
@@ -172,7 +168,6 @@ export default function App() {
       label: 'Decision Log',
       icon: History,
       badge: decisions.length > 0 ? decisions.length : null,
-      badgeColor: 'bg-gray-100 text-gray-600 dark:bg-[#1f1f1f] dark:text-gray-300',
     },
   ];
 
@@ -255,7 +250,11 @@ export default function App() {
                   {item.label}
                 </span>
                 {item.badge !== null && item.badge !== undefined && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold tabular-nums ${item.badgeColor}`}>
+                  <span
+                    className={`text-[11px] font-semibold tabular-nums ${
+                      isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+                    }`}
+                  >
                     {item.badge}
                   </span>
                 )}
