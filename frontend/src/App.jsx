@@ -176,234 +176,204 @@ export default function App() {
     (theme === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-[#f5f5f5] flex font-sans">
+    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-[#f5f5f5] flex flex-col font-sans">
       <Toaster position="top-center" toastOptions={{ duration: 3500 }} />
 
-      {/* Mobile Overlay */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:sticky top-0 h-screen w-64 bg-white dark:bg-[#0a0a0a] border-r border-gray-200 dark:border-[#1c1c1c] flex flex-col z-40 transition-transform duration-300 ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
-      >
-        {/* Brand Header */}
-        <div className="p-5 border-b border-gray-200 dark:border-[#1c1c1c] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-              <Command className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h1 className="font-bold text-base leading-tight text-gray-900 dark:text-white tracking-tight">
-                Crew Sync
-              </h1>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Campus Operations</p>
-            </div>
-          </div>
+      {/* Full-Width Top Navbar (Logo + Name + Read-only Status — No buttons) */}
+      <header className="sticky top-0 z-30 h-14 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#1c1c1c] px-4 sm:px-6 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => setIsSidebarOpen(false)}
-            className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-white"
+            onClick={() => setIsSidebarOpen(true)}
+            className="lg:hidden p-1.5 -ml-1 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]"
+            aria-label="Open navigation"
           >
-            <X className="w-4 h-4" />
+            <Menu className="w-5 h-5" />
           </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
-          <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Workspace</p>
-
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActiveTab(item.id);
-                  setIsSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors border ${
-                  isActive
-                    ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/50'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#141414] hover:text-gray-900 dark:hover:text-white border-transparent'
-                }`}
-              >
-                <span className="flex items-center gap-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`} />
-                  {item.label}
-                </span>
-                {item.badge !== null && item.badge !== undefined && (
-                  <span
-                    className={`text-[11px] font-semibold tabular-nums ${
-                      isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Footer Controls */}
-        <div className="p-4 border-t border-gray-200 dark:border-[#1c1c1c] space-y-2 shrink-0">
-          <button
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#141414] border border-gray-200 dark:border-[#1c1c1c] transition"
-          >
-            <span className="flex items-center gap-2">
-              {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-gray-700" />}
-              {isDark ? 'Light Mode' : 'Dark Mode'}
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
+            <Command className="w-4 h-4 text-white" />
+          </div>
+          <div className="flex items-baseline gap-2.5">
+            <span className="font-bold text-base text-gray-900 dark:text-white tracking-tight">
+              Crew Sync
             </span>
-            <span className="text-[10px] uppercase tracking-wider text-gray-400">{isDark ? 'Dark' : 'Light'}</span>
-          </button>
-
-          <button
-            onClick={handleResetDemo}
-            disabled={resetting}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#141414] border border-gray-200 dark:border-[#1c1c1c] disabled:opacity-50 transition"
-          >
-            <RotateCcw className={`w-3.5 h-3.5 ${resetting ? 'animate-spin' : ''}`} />
-            {resetting ? 'Resetting Demo...' : 'Reset Demo Data'}
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 min-w-0 flex flex-col">
-        {/* Mobile Top Bar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#1c1c1c] px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="p-2 -ml-1 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-[#1a1a1a]"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <span className="font-bold text-gray-900 dark:text-white">Crew Sync</span>
+            <span className="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 font-medium">
+              Campus Club Coordinator
+            </span>
           </div>
-          <button
-            onClick={handleRunAgent}
-            disabled={runningAgent}
-            className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${runningAgent ? 'animate-spin' : ''}`} /> Sync
-          </button>
         </div>
 
-        <div className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-5">
-          {/* Compact Workspace Header */}
-          <div className="rounded-2xl bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Campus Club Operations
-                </span>
-                <span className="text-gray-300 dark:text-gray-700">•</span>
-                <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
-                  {counts.clubs} Clubs Synchronized
-                </span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                Crew Sync Command Center
-              </h2>
-            </div>
+        <div className="hidden md:flex items-center gap-5 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+          <span>
+            Events <strong className="text-gray-900 dark:text-white ml-1">{counts.scheduledEvents}</strong>
+          </span>
+          <span>
+            Clashes <strong className="text-gray-900 dark:text-white ml-1">{counts.clashes}</strong>
+          </span>
+          <span>
+            Quiet <strong className="text-gray-900 dark:text-white ml-1">{counts.quietClubs}</strong>
+          </span>
+          <span>
+            Open Roles <strong className="text-gray-900 dark:text-white ml-1">{counts.openVolunteerRoles}</strong>
+          </span>
+          <span>
+            Pending <strong className="text-gray-900 dark:text-white ml-1">{pendingCount}</strong>
+          </span>
+        </div>
+      </header>
 
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 tabular-nums">
-              <div className="flex items-center gap-5 text-xs">
-                <div>
-                  <span className="text-gray-400 block">Events</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">{counts.scheduledEvents}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block">Clashes</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">{counts.clashes}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block">Quiet</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">{counts.quietClubs}</span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block">Open Roles</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">
-                    {counts.openVolunteerRoles}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-gray-400 block">Pending</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">{pendingCount}</span>
-                </div>
-              </div>
-
-              <button
-                onClick={handleRunAgent}
-                disabled={runningAgent}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-2 transition disabled:opacity-60 shrink-0"
-              >
-                <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
-                {runningAgent ? 'Running Agent...' : 'Run Agent Sync'}
-              </button>
-            </div>
-          </div>
-
-          {/* Active View */}
-          {loading ? (
-            <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-12 text-center text-sm text-gray-500">
-              Connecting to campus telemetry...
-            </div>
-          ) : (
-            <>
-              {activeTab === 'calendar' && (
-                <CalendarView
-                  events={eventsData.events}
-                  clashes={eventsData.clashes}
-                  clubs={clubs}
-                  onOpenAddEvent={() => setIsAddEventOpen(true)}
-                  onNavigateTab={setActiveTab}
-                />
-              )}
-
-              {activeTab === 'agent' && (
-                <AgentPanel
-                  decisions={decisions}
-                  brief={brief}
-                  llmInfo={agentStatus?.llm}
-                  onDecide={handleDecide}
-                  busyDecisionId={busyDecisionId}
-                  onRunAgent={handleRunAgent}
-                  runningAgent={runningAgent}
-                />
-              )}
-
-              {activeTab === 'clubs' && <ClubsView clubs={clubs} onNavigateTab={setActiveTab} />}
-
-              {activeTab === 'volunteers' && (
-                <VolunteerView
-                  roleMatches={volunteersData.roleMatches}
-                  volunteers={volunteersData.volunteers}
-                  onNavigateTab={setActiveTab}
-                />
-              )}
-
-              {activeTab === 'reports' && <ReportView onReportGenerated={loadAll} />}
-
-              {activeTab === 'decisions' && <DecisionLogView decisions={decisions} />}
-            </>
+      <div className="flex flex-1 min-h-0">
+        {/* Mobile Overlay */}
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+            />
           )}
-        </div>
-      </main>
+        </AnimatePresence>
+
+        {/* Sidebar (All navigation + action buttons live here only) */}
+        <aside
+          className={`fixed lg:sticky top-0 lg:top-14 h-screen lg:h-[calc(100vh-3.5rem)] w-64 bg-white dark:bg-[#0a0a0a] border-r border-gray-200 dark:border-[#1c1c1c] flex flex-col z-40 transition-transform duration-300 ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+        >
+          {/* Mobile Drawer Close */}
+          <div className="lg:hidden p-4 border-b border-gray-200 dark:border-[#1c1c1c] flex items-center justify-between shrink-0">
+            <span className="font-bold text-sm text-gray-900 dark:text-white">Menu</span>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
+            <p className="px-3 pt-1 text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">
+              Workspace
+            </p>
+
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors border ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/50'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#141414] hover:text-gray-900 dark:hover:text-white border-transparent'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`} />
+                    {item.label}
+                  </span>
+                  {item.badge !== null && item.badge !== undefined && (
+                    <span
+                      className={`text-[11px] font-semibold tabular-nums ${
+                        isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Sidebar Action Buttons */}
+          <div className="p-4 border-t border-gray-200 dark:border-[#1c1c1c] space-y-2 shrink-0">
+            <button
+              onClick={handleRunAgent}
+              disabled={runningAgent}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold transition"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${runningAgent ? 'animate-spin' : ''}`} />
+              {runningAgent ? 'Running Agent...' : 'Run Agent Sync'}
+            </button>
+
+            <button
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#141414] border border-gray-200 dark:border-[#1c1c1c] transition"
+            >
+              <span className="flex items-center gap-2">
+                {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-gray-700" />}
+                {isDark ? 'Light Mode' : 'Dark Mode'}
+              </span>
+              <span className="text-[10px] uppercase tracking-wider text-gray-400">{isDark ? 'Dark' : 'Light'}</span>
+            </button>
+
+            <button
+              onClick={handleResetDemo}
+              disabled={resetting}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#141414] border border-gray-200 dark:border-[#1c1c1c] disabled:opacity-50 transition"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${resetting ? 'animate-spin' : ''}`} />
+              {resetting ? 'Resetting Demo...' : 'Reset Demo Data'}
+            </button>
+          </div>
+        </aside>
+
+        {/* Main Workspace */}
+        <main className="flex-1 min-w-0">
+          <div className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-5">
+            {loading ? (
+              <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-12 text-center text-sm text-gray-500">
+                Connecting to campus telemetry...
+              </div>
+            ) : (
+              <>
+                {activeTab === 'calendar' && (
+                  <CalendarView
+                    events={eventsData.events}
+                    clashes={eventsData.clashes}
+                    clubs={clubs}
+                    onOpenAddEvent={() => setIsAddEventOpen(true)}
+                    onNavigateTab={setActiveTab}
+                  />
+                )}
+
+                {activeTab === 'agent' && (
+                  <AgentPanel
+                    decisions={decisions}
+                    brief={brief}
+                    llmInfo={agentStatus?.llm}
+                    onDecide={handleDecide}
+                    busyDecisionId={busyDecisionId}
+                    onRunAgent={handleRunAgent}
+                    runningAgent={runningAgent}
+                  />
+                )}
+
+                {activeTab === 'clubs' && <ClubsView clubs={clubs} onNavigateTab={setActiveTab} />}
+
+                {activeTab === 'volunteers' && (
+                  <VolunteerView
+                    roleMatches={volunteersData.roleMatches}
+                    volunteers={volunteersData.volunteers}
+                    onNavigateTab={setActiveTab}
+                  />
+                )}
+
+                {activeTab === 'reports' && <ReportView onReportGenerated={loadAll} />}
+
+                {activeTab === 'decisions' && <DecisionLogView decisions={decisions} />}
+              </>
+            )}
+          </div>
+        </main>
+      </div>
 
       <AddEventModal
         isOpen={isAddEventOpen}
