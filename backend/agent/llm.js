@@ -475,7 +475,7 @@ export async function generateGroundedEventReport(reportFacts) {
       : '- All participants registered individually.',
     '',
     `## 4. AI Coordinator Assessment (${ai.model})`,
-    `- **Turnout Goal Confidence (noul):** ${turnoutPct}%`,
+    `- **Turnout Goal Confidence:** ${turnoutPct}%`,
     `- **Operational Impact Rating:** ${impactLabel} (${(ai.answers?.impact_rating?.score ?? 2).toFixed(2)} / 2.00)`,
     `- **Recommended Follow-up:** ${
       followupChoice === 'convert_solo_to_members'
