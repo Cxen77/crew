@@ -154,7 +154,7 @@ export default function ReportView({ onReportGenerated }) {
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Teams & Auto-Teams</span>
-            <Layers className="w-4 h-4 text-teal-600" />
+            <Layers className="w-4 h-4 text-blue-600" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.teams}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">

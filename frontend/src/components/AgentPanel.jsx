@@ -16,12 +16,12 @@ const MODULE_META = {
   clash: {
     label: 'Clash',
     icon: AlertTriangle,
-    tagClass: 'bg-gray-900 text-white dark:bg-white dark:text-black',
+    tagClass: 'bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1a1a1a] dark:text-gray-200 dark:border-[#2e2e2e]',
   },
   collaborate: {
     label: 'Collab',
     icon: GitMerge,
-    tagClass: 'bg-teal-50 text-teal-800 border border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-900/50',
+    tagClass: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/50',
   },
   health: {
     label: 'Revival',

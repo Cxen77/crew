@@ -101,7 +101,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                         </div>
                         <div className="flex items-center gap-1.5">
                           {c.hasConflict ? (
-                            <span className="px-2 py-0.5 rounded-md bg-gray-900 text-white dark:bg-white dark:text-black font-bold text-[10px] flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1c1c1c] dark:text-gray-200 dark:border-[#333333] font-bold text-[10px] flex items-center gap-1">
                               <AlertTriangle className="w-3 h-3" /> OVERLOADED
                             </span>
                           ) : idx === 0 ? (

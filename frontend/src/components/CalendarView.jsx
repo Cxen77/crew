@@ -178,7 +178,7 @@ export default function CalendarView({
             onClick={() => setOnlyClashes((v) => !v)}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
               onlyClashes
-                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
+                ? 'bg-blue-600 text-white border-blue-600'
                 : 'bg-gray-50 dark:bg-[#111111] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#242424] hover:border-gray-400'
             }`}
           >
@@ -270,7 +270,7 @@ export default function CalendarView({
                       </span>
                       {hasDayClash && (
                         <span
-                          className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-900 text-white dark:bg-white dark:text-black"
+                          className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1c1c1c] dark:text-gray-200 dark:border-[#333333]"
                           title="Clash on this day"
                         >
                           Clash
@@ -284,7 +284,7 @@ export default function CalendarView({
                           key={ev._id}
                           className={`px-1.5 py-1 rounded-md text-[10px] leading-tight truncate border ${
                             ev.hasClash
-                              ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white font-semibold'
+                              ? 'bg-gray-100 text-gray-900 border-gray-300 dark:bg-[#1c1c1c] dark:text-gray-100 dark:border-[#383838] font-semibold'
                               : 'bg-blue-50 dark:bg-[#151b26] text-blue-900 dark:text-blue-200 border-blue-100 dark:border-[#243044] font-medium'
                           }`}
                           title={`${fmtTime(ev.startAt)} · ${ev.title} (${ev.venue})`}
@@ -346,7 +346,7 @@ export default function CalendarView({
                           {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
                         </span>
                         {ev.hasClash && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-900 text-white dark:bg-white dark:text-black flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1c1c1c] dark:text-gray-200 dark:border-[#333333] flex items-center gap-1">
                             <AlertTriangle className="w-3 h-3" /> CLASH
                           </span>
                         )}
@@ -413,13 +413,13 @@ export default function CalendarView({
                             {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
                           </span>
                           {isCollab && (
-                            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 flex items-center gap-1">
                               <GitMerge className="w-3 h-3" /> Co-Hosted
                             </span>
                           )}
                         </div>
                         {ev.hasClash && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-900 text-white dark:bg-white dark:text-black">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-100 text-gray-800 border border-gray-300 dark:bg-[#1c1c1c] dark:text-gray-200 dark:border-[#333333]">
                             CLASH
                           </span>
                         )}
