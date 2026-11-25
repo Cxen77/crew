@@ -143,7 +143,7 @@ export default function App() {
       label: 'Shared Calendar',
       icon: Calendar,
       badge: counts.clashes > 0 ? `${counts.clashes} clash` : null,
-      badgeColor: 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300',
+      badgeColor: 'bg-gray-900 text-white dark:bg-white dark:text-black',
     },
     {
       id: 'agent',
@@ -157,7 +157,7 @@ export default function App() {
       label: 'Clubs & Health',
       icon: LayoutGrid,
       badge: counts.quietClubs > 0 ? `${counts.quietClubs} quiet` : null,
-      badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
+      badgeColor: 'bg-gray-200 text-gray-800 dark:bg-[#222222] dark:text-gray-200',
     },
     {
       id: 'volunteers',
@@ -271,7 +271,7 @@ export default function App() {
             className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#141414] border border-gray-200 dark:border-[#1c1c1c] transition"
           >
             <span className="flex items-center gap-2">
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-blue-600" />}
+              {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-blue-600" />}
               {isDark ? 'Light Mode' : 'Dark Mode'}
             </span>
             <span className="text-[10px] uppercase tracking-wider text-gray-400">{isDark ? 'Dark' : 'Light'}</span>
@@ -347,13 +347,13 @@ export default function App() {
               </div>
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Active Clashes</p>
-                <p className={`text-lg font-bold ${counts.clashes > 0 ? 'text-orange-400' : 'text-emerald-400'}`}>
+                <p className={`text-lg font-bold ${counts.clashes > 0 ? 'text-white' : 'text-emerald-400'}`}>
                   {counts.clashes}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Quiet Clubs</p>
-                <p className={`text-lg font-bold ${counts.quietClubs > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                <p className={`text-lg font-bold ${counts.quietClubs > 0 ? 'text-gray-300' : 'text-emerald-400'}`}>
                   {counts.quietClubs}
                 </p>
               </div>

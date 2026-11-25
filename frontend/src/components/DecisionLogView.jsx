@@ -61,8 +61,8 @@ export default function DecisionLogView({ decisions = [] }) {
                     isApproved
                       ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
                       : isRejected
-                      ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-800 dark:text-orange-300'
-                      : 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300'
+                      ? 'bg-gray-100 dark:bg-[#1f1f1f] text-gray-600 dark:text-gray-400'
+                      : 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                   }`}
                 >
                   {isApproved ? (

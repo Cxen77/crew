@@ -57,7 +57,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold shrink-0">
+                  <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-xs font-bold shrink-0">
                     {rm.vacanciesRemaining} Vacancy
                   </span>
                 </div>
@@ -84,7 +84,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                       key={c.volunteerId}
                       className={`p-3 rounded-xl border text-xs ${
                         c.hasConflict
-                          ? 'border-orange-300 dark:border-orange-800/70 bg-orange-50/70 dark:bg-orange-950/20'
+                          ? 'border-gray-300 dark:border-[#2e2e2e] bg-gray-100 dark:bg-[#141414]'
                           : idx === 0
                           ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20'
                           : 'border-gray-100 dark:border-[#1c1c1c] bg-gray-50 dark:bg-[#111111]'
@@ -101,7 +101,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                         </div>
                         <div className="flex items-center gap-1.5">
                           {c.hasConflict ? (
-                            <span className="px-2 py-0.5 rounded-md bg-orange-600 text-white font-bold text-[10px] flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md bg-gray-900 text-white dark:bg-white dark:text-black font-bold text-[10px] flex items-center gap-1">
                               <AlertTriangle className="w-3 h-3" /> OVERLOADED
                             </span>
                           ) : idx === 0 ? (
@@ -123,7 +123,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                             key={bIdx}
                             className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
                               b.points < 0
-                                ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300'
+                                ? 'bg-gray-200 dark:bg-[#222222] text-gray-900 dark:text-white'
                                 : b.points > 0
                                 ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
                                 : 'bg-gray-200 dark:bg-[#222] text-gray-600 dark:text-gray-400'

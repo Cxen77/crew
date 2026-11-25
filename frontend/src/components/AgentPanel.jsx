@@ -15,7 +15,7 @@ const MODULE_META = {
     label: 'Clash Resolution',
     icon: AlertTriangle,
     badgeClass:
-      'bg-orange-50 text-orange-800 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-900/60',
+      'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white',
   },
   collaborate: {
     label: 'Club Collaboration',
@@ -27,7 +27,7 @@ const MODULE_META = {
     label: 'Club Revival Plan',
     icon: HeartPulse,
     badgeClass:
-      'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/60',
+      'bg-gray-100 text-gray-800 border-gray-300 dark:bg-[#1a1a1a] dark:text-gray-200 dark:border-[#2e2e2e]',
   },
   match: {
     label: 'Volunteer Match',
@@ -169,8 +169,8 @@ export default function AgentPanel({
 
                     {/* Recruitment Draft if present */}
                     {item.actionPayload?.recruitmentDraft && (
-                      <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1">
+                      <div className="p-3 rounded-xl bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-[#242424]">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">
                           Drafted Recruitment Post
                         </p>
                         <p className="text-xs text-gray-800 dark:text-gray-200 italic">

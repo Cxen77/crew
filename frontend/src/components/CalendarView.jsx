@@ -74,15 +74,15 @@ export default function CalendarView({
     <div className="space-y-5 animate-fadeIn">
       {/* Quiet Club Alert Strip */}
       {quietClubs.length > 0 && (
-        <div className="rounded-2xl border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/20 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="rounded-2xl border border-dashed border-gray-300 dark:border-[#2e2e2e] bg-gray-100/80 dark:bg-[#0f0f0f] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gray-200 dark:bg-[#1c1c1c] text-gray-700 dark:text-gray-300 flex items-center justify-center shrink-0">
               <Moon className="w-4 h-4" />
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
                 Quiet Club Detected:{' '}
-                <span className="text-amber-700 dark:text-amber-300">
+                <span className="text-blue-600 dark:text-blue-400">
                   {quietClubs.map((c) => c.name).join(', ')}
                 </span>
               </p>
@@ -101,18 +101,18 @@ export default function CalendarView({
         </div>
       )}
 
-      {/* Active Clashes Strip (Orange/Amber — no red) */}
+      {/* Active Clashes Strip */}
       {clashes.length > 0 ? (
-        <div className="rounded-2xl border border-orange-300 dark:border-orange-800/70 bg-orange-50 dark:bg-orange-950/25 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="rounded-2xl border border-gray-300 dark:border-[#2c2c2c] bg-white dark:bg-[#0a0a0a] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gray-900 dark:bg-[#1c1c1c] text-white flex items-center justify-center shrink-0">
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-orange-100">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">
                 {clashes.length} Active Scheduling Clash{clashes.length > 1 ? 'es' : ''} Flagged
               </p>
-              <p className="text-xs text-orange-800 dark:text-orange-300/90 mt-0.5">
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
                 Highlighted cards below share overlapping times & venues or double-book a club.
               </p>
             </div>
@@ -223,7 +223,7 @@ export default function CalendarView({
                       key={ev._id}
                       className={`rounded-2xl border p-4 transition-colors ${
                         ev.hasClash
-                          ? 'border-orange-400 dark:border-orange-700 bg-orange-50/80 dark:bg-orange-950/20'
+                          ? 'border-gray-900 dark:border-white/40 bg-gray-50 dark:bg-[#121212]'
                           : isQuietHost
                           ? 'border-gray-200 dark:border-[#1c1c1c] bg-gray-100/80 dark:bg-[#111111] opacity-75'
                           : 'border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] hover:border-blue-200 dark:hover:border-blue-900/60'
@@ -246,7 +246,7 @@ export default function CalendarView({
                         </div>
 
                         {ev.hasClash && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-orange-600 text-white flex items-center gap-1 shrink-0">
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-900 text-white dark:bg-white dark:text-black flex items-center gap-1 shrink-0">
                             <AlertTriangle className="w-3 h-3" /> CLASH
                           </span>
                         )}
@@ -274,7 +274,7 @@ export default function CalendarView({
                         {openRolesCount > 0 && (
                           <button
                             onClick={() => onNavigateTab('volunteers')}
-                            className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-semibold text-[11px] flex items-center gap-1 hover:bg-amber-100 transition"
+                            className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold text-[11px] flex items-center gap-1 hover:bg-blue-100 transition"
                           >
                             <Users className="w-3 h-3" /> {openRolesCount} Open Role{openRolesCount > 1 ? 's' : ''}
                           </button>
@@ -282,7 +282,7 @@ export default function CalendarView({
                       </div>
 
                       {ev.hasClash && ev.clashDetails?.[0] && (
-                        <div className="mt-2.5 p-2.5 rounded-xl bg-orange-100/80 dark:bg-orange-900/30 text-[11px] text-orange-900 dark:text-orange-200 flex items-start gap-1.5">
+                        <div className="mt-2.5 p-2.5 rounded-xl bg-gray-100 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] text-[11px] text-gray-700 dark:text-gray-300 flex items-start gap-1.5">
                           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                           <span>{ev.clashDetails[0].reason}</span>
                         </div>
