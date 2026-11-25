@@ -310,61 +310,58 @@ export default function App() {
           </button>
         </div>
 
-        <div className="p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
-          {/* Clean Architectural Header Card (Zero gradients, zero blobs) */}
-          <div className="rounded-2xl bg-gray-900 dark:bg-[#0a0a0a] border border-gray-800 dark:border-[#1c1c1c] overflow-hidden">
-            <div className="p-6 sm:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-400 mb-1.5">
-                  Campus Club Operations · Track 3
-                </p>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                  Crew Sync Command Center
-                </h2>
-                <p className="text-sm text-gray-300 mt-1.5 max-w-2xl">
-                  Shared schedule across {counts.clubs} campus clubs — flagging venue clashes, quiet-club decline,
-                  cross-club collaborations, volunteer overload, and verified event reports.
-                </p>
+        <div className="p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-5">
+          {/* Compact Workspace Header (puts Shared Calendar right at the top) */}
+          <div className="rounded-2xl bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  Campus Club Operations
+                </span>
+                <span className="text-gray-300 dark:text-gray-700">•</span>
+                <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400">
+                  {counts.clubs} Clubs Synchronized
+                </span>
               </div>
-
-              <div className="flex flex-wrap items-center gap-3 shrink-0">
-                <button
-                  onClick={handleRunAgent}
-                  disabled={runningAgent}
-                  className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 transition disabled:opacity-60"
-                >
-                  <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
-                  {runningAgent ? 'Running Agent...' : 'Run Agent Sync'}
-                </button>
-              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
+                Crew Sync Command Center
+              </h2>
             </div>
 
-            {/* Live KPI Strip */}
-            <div className="border-t border-gray-800 dark:border-[#1c1c1c] bg-gray-950/60 dark:bg-[#111111] px-6 sm:px-7 py-3.5 grid grid-cols-2 sm:grid-cols-5 gap-4 tabular-nums">
-              <div>
-                <p className="text-[11px] text-gray-400 font-medium">Scheduled Events</p>
-                <p className="text-lg font-bold text-white">{counts.scheduledEvents}</p>
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 tabular-nums">
+              <div className="flex items-center gap-5 text-xs">
+                <div>
+                  <span className="text-gray-400 block">Events</span>
+                  <span className="text-base font-bold text-gray-900 dark:text-white">{counts.scheduledEvents}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block">Clashes</span>
+                  <span className="text-base font-bold text-gray-900 dark:text-white">{counts.clashes}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block">Quiet</span>
+                  <span className="text-base font-bold text-gray-900 dark:text-white">{counts.quietClubs}</span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block">Open Roles</span>
+                  <span className="text-base font-bold text-blue-600 dark:text-blue-400">
+                    {counts.openVolunteerRoles}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-400 block">Pending</span>
+                  <span className="text-base font-bold text-blue-600 dark:text-blue-400">{pendingCount}</span>
+                </div>
               </div>
-              <div>
-                <p className="text-[11px] text-gray-400 font-medium">Active Clashes</p>
-                <p className={`text-lg font-bold ${counts.clashes > 0 ? 'text-white' : 'text-emerald-400'}`}>
-                  {counts.clashes}
-                </p>
-              </div>
-              <div>
-                <p className="text-[11px] text-gray-400 font-medium">Quiet Clubs</p>
-                <p className={`text-lg font-bold ${counts.quietClubs > 0 ? 'text-gray-300' : 'text-emerald-400'}`}>
-                  {counts.quietClubs}
-                </p>
-              </div>
-              <div>
-                <p className="text-[11px] text-gray-400 font-medium">Open Roles</p>
-                <p className="text-lg font-bold text-sky-400">{counts.openVolunteerRoles}</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-gray-400 font-medium">Pending Approvals</p>
-                <p className="text-lg font-bold text-blue-400">{pendingCount}</p>
-              </div>
+
+              <button
+                onClick={handleRunAgent}
+                disabled={runningAgent}
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-2 transition disabled:opacity-60 shrink-0"
+              >
+                <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
+                {runningAgent ? 'Running Agent...' : 'Run Agent Sync'}
+              </button>
             </div>
           </div>
 

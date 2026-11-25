@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import {
   AlertTriangle,
-  Calendar,
-  CheckCircle2,
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   GitMerge,
   Info,
+  List,
   MapPin,
   Moon,
   Plus,
@@ -20,17 +22,26 @@ function fmtTime(dateStr) {
   });
 }
 
-function dayKey(dateStr) {
-  const d = new Date(dateStr);
+function dayKey(dateObj) {
+  const d = new Date(dateObj);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function fmtDayHeading(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-IN', {
-    weekday: 'short',
+    weekday: 'long',
     month: 'short',
     day: 'numeric',
   });
+}
+
+function startOfWeekMonday(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay(); // 0=Sun..6=Sat
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
 }
 
 export default function CalendarView({
@@ -42,6 +53,9 @@ export default function CalendarView({
 }) {
   const [clubFilter, setClubFilter] = useState('all');
   const [onlyClashes, setOnlyClashes] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'agenda'
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [selectedDayKey, setSelectedDayKey] = useState(() => dayKey(new Date()));
 
   const scheduledEvents = useMemo(() => {
     return events
@@ -58,88 +72,99 @@ export default function CalendarView({
       .sort((a, b) => new Date(a.startAt) - new Date(b.startAt));
   }, [events, clubFilter, onlyClashes]);
 
-  const groupedByDay = useMemo(() => {
+  const eventsByDay = useMemo(() => {
     const map = new Map();
     for (const ev of scheduledEvents) {
       const k = dayKey(ev.startAt);
-      if (!map.has(k)) map.set(k, { key: k, label: fmtDayHeading(ev.startAt), items: [] });
-      map.get(k).items.push(ev);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k).push(ev);
     }
-    return Array.from(map.values());
+    return map;
   }, [scheduledEvents]);
+
+  // 14-day (2-week) calendar grid starting from the Monday of the current week + weekOffset
+  const gridDays = useMemo(() => {
+    const start = startOfWeekMonday(new Date());
+    start.setDate(start.getDate() + weekOffset * 7);
+    const days = [];
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      days.push({
+        date: d,
+        key: dayKey(d),
+        dayNum: d.getDate(),
+        monthShort: d.toLocaleDateString('en-IN', { month: 'short' }),
+        isToday: dayKey(d) === dayKey(new Date()),
+      });
+    }
+    return days;
+  }, [weekOffset]);
+
+  const rangeLabel = useMemo(() => {
+    if (gridDays.length === 0) return '';
+    const first = gridDays[0].date;
+    const last = gridDays[gridDays.length - 1].date;
+    const f = first.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    const l = last.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `${f} – ${l}`;
+  }, [gridDays]);
+
+  const selectedDayEvents = useMemo(() => {
+    return eventsByDay.get(selectedDayKey) || [];
+  }, [eventsByDay, selectedDayKey]);
+
+  const agendaGroups = useMemo(() => {
+    return Array.from(eventsByDay.entries()).map(([key, items]) => ({
+      key,
+      label: fmtDayHeading(items[0].startAt),
+      items,
+    }));
+  }, [eventsByDay]);
 
   const quietClubs = useMemo(() => clubs.filter((c) => c.health?.isQuiet || c.isQuiet), [clubs]);
 
   return (
-    <div className="space-y-5 animate-fadeIn">
-      {/* Quiet Club Alert Strip */}
-      {quietClubs.length > 0 && (
-        <div className="rounded-2xl border border-dashed border-gray-300 dark:border-[#2e2e2e] bg-gray-100/80 dark:bg-[#0f0f0f] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gray-200 dark:bg-[#1c1c1c] text-gray-700 dark:text-gray-300 flex items-center justify-center shrink-0">
-              <Moon className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                Quiet Club Detected:{' '}
-                <span className="text-blue-600 dark:text-blue-400">
-                  {quietClubs.map((c) => c.name).join(', ')}
-                </span>
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
-                {quietClubs[0]?.health?.daysSinceLastEvent || 75} days without an event and declining membership (
-                {quietClubs[0]?.health?.memberTrendLabel}). Revival plan ready in Agent Proposals.
-              </p>
-            </div>
+    <div className="space-y-4 animate-fadeIn">
+      {/* Top Toolbar: Shared Calendar Controls */}
+      <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Week Navigation */}
+          <div className="flex items-center gap-1 bg-gray-50 dark:bg-[#111111] border border-gray-200 dark:border-[#242424] rounded-xl p-1">
+            <button
+              onClick={() => setWeekOffset((w) => w - 1)}
+              className="p-1.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-[#1c1c1c] transition"
+              title="Previous week"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => {
+                setWeekOffset(0);
+                setSelectedDayKey(dayKey(new Date()));
+              }}
+              className="px-2.5 py-1 text-xs font-semibold text-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-[#1c1c1c] rounded-lg transition"
+            >
+              Today
+            </button>
+            <button
+              onClick={() => setWeekOffset((w) => w + 1)}
+              className="p-1.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-[#1c1c1c] transition"
+              title="Next week"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            onClick={() => onNavigateTab('agent')}
-            className="px-3.5 py-2 rounded-xl bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 text-white text-xs font-semibold transition shrink-0"
-          >
-            Review Revival Plan
-          </button>
-        </div>
-      )}
 
-      {/* Active Clashes Strip */}
-      {clashes.length > 0 ? (
-        <div className="rounded-2xl border border-gray-300 dark:border-[#2c2c2c] bg-white dark:bg-[#0a0a0a] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gray-900 dark:bg-[#1c1c1c] text-white flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                {clashes.length} Active Scheduling Clash{clashes.length > 1 ? 'es' : ''} Flagged
-              </p>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
-                Highlighted cards below share overlapping times & venues or double-book a club.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => onNavigateTab('agent')}
-            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0"
-          >
-            Resolve in Agent Panel
-          </button>
-        </div>
-      ) : (
-        <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/20 p-4 flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-            Zero venue or club double-booking clashes across the shared campus calendar.
-          </p>
-        </div>
-      )}
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight px-1">
+            {rangeLabel}
+          </h3>
 
-      {/* Filter & Actions Bar */}
-      <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
+          {/* Club Filter */}
           <select
             value={clubFilter}
             onChange={(e) => setClubFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-[#262626] bg-gray-50 dark:bg-[#111111] text-sm font-medium text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-[#242424] bg-gray-50 dark:bg-[#111111] text-xs font-semibold text-gray-800 dark:text-gray-200 focus:outline-none"
           >
             <option value="all">All Clubs ({clubs.length})</option>
             {clubs.map((c) => (
@@ -151,138 +176,205 @@ export default function CalendarView({
 
           <button
             onClick={() => setOnlyClashes((v) => !v)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition flex items-center gap-1.5 ${
               onlyClashes
-                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white'
-                : 'bg-gray-50 dark:bg-[#111111] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#262626] hover:border-gray-400'
+                ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white'
+                : 'bg-gray-50 dark:bg-[#111111] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#242424] hover:border-gray-400'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            Clashes Only ({clashes.length})
+            Clashes ({clashes.length})
           </button>
         </div>
 
-        <button
-          onClick={onOpenAddEvent}
-          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition"
-        >
-          <Plus className="w-4 h-4" />
-          Schedule Event
-        </button>
-      </div>
-
-      {/* Club Status Chips Strip */}
-      <div className="flex flex-wrap gap-2">
-        {clubs.map((c) => {
-          const isQuiet = c.health?.isQuiet || c.isQuiet;
-          return (
+        <div className="flex items-center gap-2">
+          {/* Grid vs Agenda Switcher */}
+          <div className="flex items-center bg-gray-100 dark:bg-[#141414] border border-gray-200 dark:border-[#242424] rounded-xl p-1">
             <button
-              key={c._id}
-              onClick={() => setClubFilter(clubFilter === c._id ? 'all' : c._id)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition flex items-center gap-1.5 ${
-                isQuiet
-                  ? 'bg-gray-100 dark:bg-[#141414] text-gray-400 dark:text-gray-500 border-dashed border-gray-300 dark:border-[#2b2b2b]'
-                  : clubFilter === c._id
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white dark:bg-[#0a0a0a] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-[#1c1c1c] hover:border-blue-300'
+              onClick={() => setViewMode('grid')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+                viewMode === 'grid'
+                  ? 'bg-white dark:bg-[#222222] text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400'
               }`}
             >
-              {c.name}
-              {isQuiet && <span className="text-[10px] uppercase tracking-wider font-bold">(Quiet)</span>}
+              <CalendarIcon className="w-3.5 h-3.5" /> Grid
             </button>
-          );
-        })}
+            <button
+              onClick={() => setViewMode('agenda')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+                viewMode === 'agenda'
+                  ? 'bg-white dark:bg-[#222222] text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" /> List
+            </button>
+          </div>
+
+          <button
+            onClick={onOpenAddEvent}
+            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 transition"
+          >
+            <Plus className="w-4 h-4" />
+            Schedule Event
+          </button>
+        </div>
       </div>
 
-      {/* Shared Multi-Day Timeline */}
-      {groupedByDay.length === 0 ? (
-        <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-10 text-center">
-          <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">No events match this filter</p>
-        </div>
-      ) : (
-        <div className="space-y-5">
-          {groupedByDay.map((group) => (
-            <div key={group.key} className="space-y-2.5">
-              <div className="flex items-center gap-2 px-1">
-                <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
-                  {group.label}
-                </h3>
-                <span className="text-xs text-gray-400">({group.items.length} events)</span>
-              </div>
+      {/* Main Shared Calendar Grid (2-Week Matrix) */}
+      {viewMode === 'grid' ? (
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 items-start">
+          {/* 7-column Calendar Matrix */}
+          <div className="xl:col-span-8 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl overflow-hidden">
+            {/* Weekday Headers */}
+            <div className="grid grid-cols-7 border-b border-gray-200 dark:border-[#1c1c1c] bg-gray-50 dark:bg-[#111111]">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
+                <div
+                  key={d}
+                  className="py-2.5 px-2 text-center text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                >
+                  {d}
+                </div>
+              ))}
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {group.items.map((ev) => {
-                  const isQuietHost = ev.clubId?.isQuiet;
+            {/* 14 Day Cells */}
+            <div className="grid grid-cols-7 divide-x divide-y divide-gray-200 dark:divide-[#1c1c1c]">
+              {gridDays.map((cell) => {
+                const dayEvents = eventsByDay.get(cell.key) || [];
+                const isSelected = selectedDayKey === cell.key;
+                const hasDayClash = dayEvents.some((e) => e.hasClash);
+
+                return (
+                  <div
+                    key={cell.key}
+                    onClick={() => setSelectedDayKey(cell.key)}
+                    className={`min-h-[112px] p-2 cursor-pointer transition-colors flex flex-col ${
+                      isSelected
+                        ? 'bg-blue-50/60 dark:bg-[#141923]'
+                        : 'bg-white dark:bg-[#0a0a0a] hover:bg-gray-50 dark:hover:bg-[#111111]'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span
+                        className={`text-xs font-bold tabular-nums inline-flex items-center justify-center rounded-md px-1.5 py-0.5 ${
+                          cell.isToday
+                            ? 'bg-blue-600 text-white'
+                            : isSelected
+                            ? 'text-blue-700 dark:text-blue-300'
+                            : 'text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        {cell.dayNum === 1 || cell.isToday ? `${cell.monthShort} ${cell.dayNum}` : cell.dayNum}
+                      </span>
+                      {hasDayClash && (
+                        <span
+                          className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-900 text-white dark:bg-white dark:text-black"
+                          title="Clash on this day"
+                        >
+                          Clash
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 flex-1 overflow-hidden">
+                      {dayEvents.slice(0, 3).map((ev) => (
+                        <div
+                          key={ev._id}
+                          className={`px-1.5 py-1 rounded-md text-[10px] leading-tight truncate border ${
+                            ev.hasClash
+                              ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white font-semibold'
+                              : 'bg-blue-50 dark:bg-[#151b26] text-blue-900 dark:text-blue-200 border-blue-100 dark:border-[#243044] font-medium'
+                          }`}
+                          title={`${fmtTime(ev.startAt)} · ${ev.title} (${ev.venue})`}
+                        >
+                          {ev.clubId?.name}: {ev.title}
+                        </div>
+                      ))}
+                      {dayEvents.length > 3 && (
+                        <p className="text-[10px] font-semibold text-gray-400 px-1">
+                          +{dayEvents.length - 3} more
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Selected Day Inspector Panel */}
+          <div className="xl:col-span-4 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4 space-y-3">
+            <div className="flex items-center justify-between pb-2.5 border-b border-gray-100 dark:border-[#1c1c1c]">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Selected Day</p>
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white mt-0.5">
+                  {fmtDayHeading(`${selectedDayKey}T12:00:00`)}
+                </h4>
+              </div>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 dark:bg-[#181818] text-gray-700 dark:text-gray-300 tabular-nums">
+                {selectedDayEvents.length} event{selectedDayEvents.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {selectedDayEvents.length === 0 ? (
+              <div className="py-10 text-center">
+                <CalendarIcon className="w-8 h-8 text-gray-300 dark:text-gray-700 mx-auto mb-2" />
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                  No events scheduled on this day.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[520px] overflow-y-auto custom-scrollbar pr-0.5">
+                {selectedDayEvents.map((ev) => {
                   const isCollab = (ev.collaboratingClubIds || []).length > 0;
                   const openRolesCount = (ev.openRoles || []).filter((r) => r.isOpen).length;
 
                   return (
                     <div
                       key={ev._id}
-                      className={`rounded-2xl border p-4 transition-colors ${
+                      className={`rounded-xl border p-3.5 space-y-2 ${
                         ev.hasClash
-                          ? 'border-gray-900 dark:border-white/40 bg-gray-50 dark:bg-[#121212]'
-                          : isQuietHost
-                          ? 'border-gray-200 dark:border-[#1c1c1c] bg-gray-100/80 dark:bg-[#111111] opacity-75'
-                          : 'border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] hover:border-blue-200 dark:hover:border-blue-900/60'
+                          ? 'border-gray-900 dark:border-white/40 bg-gray-50 dark:bg-[#131313]'
+                          : 'border-gray-200 dark:border-[#1f1f1f] bg-gray-50/50 dark:bg-[#111111]'
                       }`}
                     >
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
-                            {ev.clubId?.name || 'Club'}
-                            {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
-                          </span>
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 dark:bg-[#181818] text-gray-600 dark:text-gray-400">
-                            {ev.category}
-                          </span>
-                          {isCollab && (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 border border-teal-200/70 dark:border-teal-900/50 flex items-center gap-1">
-                              <GitMerge className="w-3 h-3" /> Co-Hosted
-                            </span>
-                          )}
-                        </div>
-
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
+                          {ev.clubId?.name || 'Club'}
+                          {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
+                        </span>
                         {ev.hasClash && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-900 text-white dark:bg-white dark:text-black flex items-center gap-1 shrink-0">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-900 text-white dark:bg-white dark:text-black flex items-center gap-1">
                             <AlertTriangle className="w-3 h-3" /> CLASH
                           </span>
                         )}
                       </div>
 
-                      <h4 className="font-bold text-gray-900 dark:text-white text-base leading-snug">
-                        {ev.title}
-                      </h4>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                        {ev.description}
-                      </p>
+                      <h5 className="text-sm font-bold text-gray-900 dark:text-white leading-snug">{ev.title}</h5>
 
-                      <div className="mt-3 pt-3 border-t border-gray-100 dark:border-[#1c1c1c] flex flex-wrap items-center justify-between gap-2 text-xs text-gray-600 dark:text-gray-400">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="flex items-center gap-1 font-medium">
-                            <Clock className="w-3.5 h-3.5 text-gray-400" />
-                            {fmtTime(ev.startAt)} – {fmtTime(ev.endAt)}
-                          </span>
-                          <span className="flex items-center gap-1 font-medium">
-                            <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                            {ev.venue}
-                          </span>
-                        </div>
-
-                        {openRolesCount > 0 && (
-                          <button
-                            onClick={() => onNavigateTab('volunteers')}
-                            className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold text-[11px] flex items-center gap-1 hover:bg-blue-100 transition"
-                          >
-                            <Users className="w-3 h-3" /> {openRolesCount} Open Role{openRolesCount > 1 ? 's' : ''}
-                          </button>
-                        )}
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-600 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {fmtTime(ev.startAt)} – {fmtTime(ev.endAt)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" /> {ev.venue}
+                        </span>
                       </div>
 
+                      {openRolesCount > 0 && (
+                        <button
+                          onClick={() => onNavigateTab('volunteers')}
+                          className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                        >
+                          <Users className="w-3 h-3" /> {openRolesCount} open volunteer role
+                          {openRolesCount > 1 ? 's' : ''} →
+                        </button>
+                      )}
+
                       {ev.hasClash && ev.clashDetails?.[0] && (
-                        <div className="mt-2.5 p-2.5 rounded-xl bg-gray-100 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] text-[11px] text-gray-700 dark:text-gray-300 flex items-start gap-1.5">
+                        <div className="p-2.5 rounded-lg bg-white dark:bg-[#191919] border border-gray-200 dark:border-[#2a2a2a] text-[11px] text-gray-700 dark:text-gray-300 flex items-start gap-1.5">
                           <Info className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                           <span>{ev.clashDetails[0].reason}</span>
                         </div>
@@ -291,8 +383,105 @@ export default function CalendarView({
                   );
                 })}
               </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Agenda List View */
+        <div className="space-y-4">
+          {agendaGroups.map((group) => (
+            <div key={group.key} className="space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 px-1">
+                {group.label} ({group.items.length})
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {group.items.map((ev) => {
+                  const isCollab = (ev.collaboratingClubIds || []).length > 0;
+                  return (
+                    <div
+                      key={ev._id}
+                      className={`rounded-2xl border p-4 ${
+                        ev.hasClash
+                          ? 'border-gray-900 dark:border-white/40 bg-gray-50 dark:bg-[#121212]'
+                          : 'border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300">
+                            {ev.clubId?.name}
+                            {isCollab && ` × ${ev.collaboratingClubIds.map((c) => c.name).join(', ')}`}
+                          </span>
+                          {isCollab && (
+                            <span className="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 flex items-center gap-1">
+                              <GitMerge className="w-3 h-3" /> Co-Hosted
+                            </span>
+                          )}
+                        </div>
+                        {ev.hasClash && (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-900 text-white dark:bg-white dark:text-black">
+                            CLASH
+                          </span>
+                        )}
+                      </div>
+                      <h5 className="font-bold text-sm text-gray-900 dark:text-white">{ev.title}</h5>
+                      <div className="mt-2 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" /> {fmtTime(ev.startAt)} – {fmtTime(ev.endAt)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5" /> {ev.venue}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Compact Bottom Status Row (Quiet Club + Clashes Quick Actions) */}
+      {(clashes.length > 0 || quietClubs.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {clashes.length > 0 && (
+            <div className="rounded-xl border border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 text-xs">
+                <AlertTriangle className="w-4 h-4 text-gray-700 dark:text-gray-300 shrink-0" />
+                <span className="text-gray-700 dark:text-gray-300">
+                  <strong className="text-gray-900 dark:text-white">{clashes.length} scheduling clashes</strong> ready
+                  for resolution
+                </span>
+              </div>
+              <button
+                onClick={() => onNavigateTab('agent')}
+                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+              >
+                Resolve →
+              </button>
+            </div>
+          )}
+
+          {quietClubs.length > 0 && (
+            <div className="rounded-xl border border-dashed border-gray-300 dark:border-[#2a2a2a] bg-white dark:bg-[#0a0a0a] px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 text-xs">
+                <Moon className="w-4 h-4 text-gray-500 shrink-0" />
+                <span className="text-gray-700 dark:text-gray-300">
+                  <strong className="text-gray-900 dark:text-white">
+                    {quietClubs.map((c) => c.name).join(', ')}
+                  </strong>{' '}
+                  flagged Quiet ({quietClubs[0]?.health?.daysSinceLastEvent || 75}d inactive)
+                </span>
+              </div>
+              <button
+                onClick={() => onNavigateTab('agent')}
+                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline shrink-0"
+              >
+                Revival Plan →
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
