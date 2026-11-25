@@ -6,7 +6,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
     <div className="space-y-6 animate-fadeIn">
       {/* Open Roles & Ranked Candidates */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-base font-bold text-gray-900 dark:text-white">
               Open Event Volunteer Roles ({roleMatches.length})
@@ -18,7 +18,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
           {roleMatches.length > 0 && (
             <button
               onClick={() => onNavigateTab('agent')}
-              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shrink-0"
             >
               Approve Assignments in Agent Panel
             </button>
@@ -28,7 +28,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
         {roleMatches.length === 0 ? (
           <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-8 text-center">
             <CheckCircle2 className="w-9 h-9 text-emerald-500 mx-auto mb-2.5" />
-            <p className="text-sm font-bold text-gray-900 dark:text-white">All event volunteer roles filled!</p>
+            <p className="text-sm font-bold text-gray-900 dark:text-white">All event volunteer roles filled</p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               No unfilled vacancies remain across scheduled events.
             </p>
@@ -57,7 +57,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs font-bold shrink-0">
+                  <span className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold shrink-0">
                     {rm.vacanciesRemaining} Vacancy
                   </span>
                 </div>
@@ -84,7 +84,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                       key={c.volunteerId}
                       className={`p-3 rounded-xl border text-xs ${
                         c.hasConflict
-                          ? 'border-red-200 dark:border-red-900/50 bg-red-50/60 dark:bg-red-950/20'
+                          ? 'border-orange-300 dark:border-orange-800/70 bg-orange-50/70 dark:bg-orange-950/20'
                           : idx === 0
                           ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20'
                           : 'border-gray-100 dark:border-[#1c1c1c] bg-gray-50 dark:bg-[#111111]'
@@ -101,7 +101,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                         </div>
                         <div className="flex items-center gap-1.5">
                           {c.hasConflict ? (
-                            <span className="px-2 py-0.5 rounded-md bg-red-600 text-white font-bold text-[10px] flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md bg-orange-600 text-white font-bold text-[10px] flex items-center gap-1">
                               <AlertTriangle className="w-3 h-3" /> OVERLOADED
                             </span>
                           ) : idx === 0 ? (
@@ -109,7 +109,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                               <Award className="w-3 h-3" /> BEST FIT
                             </span>
                           ) : null}
-                          <span className="px-2 py-0.5 rounded-md bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] font-bold text-gray-900 dark:text-white">
+                          <span className="px-2 py-0.5 rounded-md bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] font-bold text-gray-900 dark:text-white tabular-nums">
                             {c.score} pts
                           </span>
                         </div>
@@ -123,7 +123,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                             key={bIdx}
                             className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
                               b.points < 0
-                                ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
+                                ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300'
                                 : b.points > 0
                                 ? 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300'
                                 : 'bg-gray-200 dark:bg-[#222] text-gray-600 dark:text-gray-400'

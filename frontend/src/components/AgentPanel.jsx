@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import {
   AlertTriangle,
-  Brain,
   Check,
+  Cpu,
   GitMerge,
   HeartPulse,
-  Sparkles,
+  RefreshCw,
   Users,
   X,
 } from 'lucide-react';
@@ -14,25 +14,26 @@ const MODULE_META = {
   clash: {
     label: 'Clash Resolution',
     icon: AlertTriangle,
-    badgeClass: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900/60',
+    badgeClass:
+      'bg-orange-50 text-orange-800 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-900/60',
   },
   collaborate: {
     label: 'Club Collaboration',
     icon: GitMerge,
     badgeClass:
-      'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-900/60',
+      'bg-teal-50 text-teal-800 border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-900/60',
   },
   health: {
     label: 'Club Revival Plan',
     icon: HeartPulse,
     badgeClass:
-      'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/60',
+      'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/60',
   },
   match: {
     label: 'Volunteer Match',
     icon: Users,
     badgeClass:
-      'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/60',
+      'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/60',
   },
 };
 
@@ -54,24 +55,24 @@ export default function AgentPanel({
   }, [decisions, moduleFilter]);
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      {/* Sense -> Think -> Act Coordinator Brief */}
-      <div className="rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-gradient-to-br from-blue-50 to-white dark:from-[#0f172a] dark:to-[#0a0a0a] p-5">
+    <div className="space-y-5 animate-fadeIn">
+      {/* Sense -> Think -> Act Coordinator Brief (flat solid surface) */}
+      <div className="rounded-2xl border border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <Brain className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+              <Cpu className="w-5 h-5" />
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white">
                   Agent Reasoning Loop (Sense → Think → Act → Explain)
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
                   {llmInfo?.configured ? `LLM: ${llmInfo.provider}` : 'Tool-Grounded Synthesizer'}
                 </span>
               </div>
-              <p className="text-sm text-gray-700 dark:text-gray-300 mt-1.5 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
                 {brief ||
                   'Agent sensed live clubs, calendar windows, and volunteer skills. Review each explained proposal below and approve or reject to execute.'}
               </p>
@@ -81,9 +82,9 @@ export default function AgentPanel({
           <button
             onClick={onRunAgent}
             disabled={runningAgent}
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-2 shrink-0 shadow-sm transition"
+            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-2 shrink-0 transition"
           >
-            <Sparkles className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
             {runningAgent ? 'Sensing...' : 'Re-Run Agent Loop'}
           </button>
         </div>
@@ -116,7 +117,7 @@ export default function AgentPanel({
       {pendingDecisions.length === 0 ? (
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-10 text-center">
           <Check className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
-          <h4 className="text-base font-bold text-gray-900 dark:text-white">All proposals resolved!</h4>
+          <h4 className="text-base font-bold text-gray-900 dark:text-white">All proposals resolved</h4>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             No pending agent proposals in this category. Check the Decision Log for the full audit trail.
           </p>
@@ -131,7 +132,7 @@ export default function AgentPanel({
             return (
               <div
                 key={item._id}
-                className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-5 shadow-sm hover:border-blue-200 dark:hover:border-blue-900/50 transition"
+                className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-5 hover:border-blue-200 dark:hover:border-blue-900/50 transition"
               >
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                   <div className="space-y-3 flex-1">
@@ -168,8 +169,8 @@ export default function AgentPanel({
 
                     {/* Recruitment Draft if present */}
                     {item.actionPayload?.recruitmentDraft && (
-                      <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/70 dark:border-amber-900/40">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-1">
+                      <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1">
                           Drafted Recruitment Post
                         </p>
                         <p className="text-xs text-gray-800 dark:text-gray-200 italic">
@@ -184,7 +185,7 @@ export default function AgentPanel({
                         {item.scoreBreakdown.map((b, idx) => (
                           <span
                             key={idx}
-                            className="px-2.5 py-1 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-[11px] font-medium text-blue-800 dark:text-blue-200"
+                            className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 text-[11px] font-medium text-blue-800 dark:text-blue-200"
                           >
                             {b.label}:{' '}
                             <strong className="font-bold">
@@ -201,7 +202,7 @@ export default function AgentPanel({
                     <button
                       onClick={() => onDecide(item._id, 'approved')}
                       disabled={isBusy}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                     >
                       <Check className="w-4 h-4" />
                       {isBusy ? 'Applying...' : 'Approve & Execute'}
@@ -209,7 +210,7 @@ export default function AgentPanel({
                     <button
                       onClick={() => onDecide(item._id, 'rejected')}
                       disabled={isBusy}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111111] hover:bg-red-50 dark:hover:bg-red-950/30 text-gray-700 dark:text-gray-300 hover:text-red-600 border border-gray-200 dark:border-[#262626] hover:border-red-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+                      className="flex-1 px-4 py-2.5 rounded-xl bg-white dark:bg-[#111111] hover:bg-orange-50 dark:hover:bg-orange-950/30 text-gray-700 dark:text-gray-300 hover:text-orange-700 border border-gray-200 dark:border-[#262626] hover:border-orange-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
                     >
                       <X className="w-4 h-4" />
                       Reject

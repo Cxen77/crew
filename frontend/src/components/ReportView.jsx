@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Download, FileText, Sparkles, Users, CheckCircle2, UserCheck, Layers } from 'lucide-react';
+import { CheckCircle2, Download, FileCheck2, FileText, Layers, UserCheck, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { fetchEventReportData, fetchReportEvents, generateEventReport } from '../api/client';
 
@@ -120,22 +120,22 @@ export default function ReportView({ onReportGenerated }) {
           <button
             onClick={handleGenerate}
             disabled={generating || !selectedEventId}
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"
+            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center gap-1.5 transition"
           >
-            <Sparkles className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
-            {generating ? 'Synthesizing...' : 'Generate AI Report'}
+            <FileCheck2 className="w-4 h-4" />
+            {generating ? 'Generating...' : 'Generate Report'}
           </button>
         </div>
       </div>
 
-      {/* Verified Database Telemetry Cards (never invented by LLM) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Verified Database Telemetry Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 tabular-nums">
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Total Registered</span>
             <Users className="w-4 h-4 text-blue-600" />
           </div>
-          <p className="text-2xl font-extrabold text-gray-900 dark:text-white mt-2">{totals.totalRegistered}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.totalRegistered}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">Verified participant rows</p>
         </div>
 
@@ -144,7 +144,7 @@ export default function ReportView({ onReportGenerated }) {
             <span>Attended</span>
             <UserCheck className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2">
+          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
             {totals.attended}{' '}
             <span className="text-sm font-semibold text-gray-500">({totals.attendanceRate}%)</span>
           </p>
@@ -154,9 +154,9 @@ export default function ReportView({ onReportGenerated }) {
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-4">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Teams & Auto-Teams</span>
-            <Layers className="w-4 h-4 text-indigo-600" />
+            <Layers className="w-4 h-4 text-teal-600" />
           </div>
-          <p className="text-2xl font-extrabold text-gray-900 dark:text-white mt-2">{totals.teams}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.teams}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">
             {totals.preTeamParticipants} pre-team · {totals.autoTeamParticipants} auto-team
           </p>
@@ -167,7 +167,7 @@ export default function ReportView({ onReportGenerated }) {
             <span>Solo Registrants</span>
             <CheckCircle2 className="w-4 h-4 text-amber-600" />
           </div>
-          <p className="text-2xl font-extrabold text-gray-900 dark:text-white mt-2">{totals.solo}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{totals.solo}</p>
           <p className="text-[11px] text-gray-400 mt-0.5">Individual participants</p>
         </div>
       </div>
@@ -203,7 +203,7 @@ export default function ReportView({ onReportGenerated }) {
             <div className="py-12 text-center">
               <FileText className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Click "Generate AI Report" to synthesize the verified metrics above into a coordinator-ready report.
+                Click "Generate Report" to compile the verified metrics above into a coordinator-ready summary.
               </p>
             </div>
           )}
@@ -225,7 +225,7 @@ export default function ReportView({ onReportGenerated }) {
                       {team.type === 'auto' ? 'Auto-Matched Team' : 'Pre-Formed Team'}
                     </p>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#262626] text-xs font-bold text-gray-900 dark:text-white">
+                  <span className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#262626] text-xs font-bold text-gray-900 dark:text-white tabular-nums">
                     {team.attended}/{team.size}
                   </span>
                 </div>

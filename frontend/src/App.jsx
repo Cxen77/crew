@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import {
-  Brain,
   Calendar,
+  Command,
+  Cpu,
   FileText,
   History,
   LayoutGrid,
@@ -11,7 +12,6 @@ import {
   Moon,
   RefreshCw,
   RotateCcw,
-  Sparkles,
   Sun,
   Users,
   X,
@@ -120,7 +120,7 @@ export default function App() {
       await resetDemoScenario();
       setBrief('');
       await loadAll();
-      toast.success('Demo scenario reset to initial state!');
+      toast.success('Demo scenario reset to initial state');
     } catch (err) {
       toast.error('Failed to reset demo data');
     } finally {
@@ -138,12 +138,42 @@ export default function App() {
   };
 
   const navItems = [
-    { id: 'calendar', label: 'Shared Calendar', icon: Calendar, badge: counts.clashes > 0 ? `${counts.clashes} clash` : null, badgeColor: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300' },
-    { id: 'agent', label: 'Agent Proposals', icon: Brain, badge: pendingCount > 0 ? pendingCount : null, badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300' },
-    { id: 'clubs', label: 'Clubs & Health', icon: LayoutGrid, badge: counts.quietClubs > 0 ? `${counts.quietClubs} quiet` : null, badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300' },
-    { id: 'volunteers', label: 'Volunteer Match', icon: Users, badge: counts.openVolunteerRoles > 0 ? counts.openVolunteerRoles : null, badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' },
+    {
+      id: 'calendar',
+      label: 'Shared Calendar',
+      icon: Calendar,
+      badge: counts.clashes > 0 ? `${counts.clashes} clash` : null,
+      badgeColor: 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300',
+    },
+    {
+      id: 'agent',
+      label: 'Agent Proposals',
+      icon: Cpu,
+      badge: pendingCount > 0 ? pendingCount : null,
+      badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
+    },
+    {
+      id: 'clubs',
+      label: 'Clubs & Health',
+      icon: LayoutGrid,
+      badge: counts.quietClubs > 0 ? `${counts.quietClubs} quiet` : null,
+      badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300',
+    },
+    {
+      id: 'volunteers',
+      label: 'Volunteer Match',
+      icon: Users,
+      badge: counts.openVolunteerRoles > 0 ? counts.openVolunteerRoles : null,
+      badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
+    },
     { id: 'reports', label: 'Event Reports', icon: FileText, badge: null },
-    { id: 'decisions', label: 'Decision Log', icon: History, badge: decisions.length > 0 ? decisions.length : null, badgeColor: 'bg-gray-100 text-gray-600 dark:bg-[#1f1f1f] dark:text-gray-300' },
+    {
+      id: 'decisions',
+      label: 'Decision Log',
+      icon: History,
+      badge: decisions.length > 0 ? decisions.length : null,
+      badgeColor: 'bg-gray-100 text-gray-600 dark:bg-[#1f1f1f] dark:text-gray-300',
+    },
   ];
 
   const isDark =
@@ -173,15 +203,17 @@ export default function App() {
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        {/* Brand Header */}
+        {/* Brand Header (solid color, zero gradients) */}
         <div className="p-5 border-b border-gray-200 dark:border-[#1c1c1c] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-600/20">
-              <Sparkles className="w-4 h-4 text-white" />
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
+              <Command className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-base leading-tight text-gray-900 dark:text-white">Crew Sync</h1>
-              <p className="text-[11px] text-gray-400 font-medium">Campus Agent OS</p>
+              <h1 className="font-bold text-base leading-tight text-gray-900 dark:text-white tracking-tight">
+                Crew Sync
+              </h1>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Campus Operations</p>
             </div>
           </div>
           <button
@@ -195,8 +227,8 @@ export default function App() {
         {/* Navigation */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto custom-scrollbar">
           <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 rounded-xl p-3 mb-4">
-            <p className="text-[11px] font-semibold text-blue-700 dark:text-blue-300 leading-relaxed">
-              Human-in-the-loop mode active: proposals wait for coordinator approval.
+            <p className="text-[11px] font-medium text-blue-800 dark:text-blue-300 leading-relaxed">
+              Coordinator control active: every agent proposal requires manual approval.
             </p>
           </div>
 
@@ -212,7 +244,7 @@ export default function App() {
                   setActiveTab(item.id);
                   setIsSidebarOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors border ${
                   isActive
                     ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/50'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#141414] hover:text-gray-900 dark:hover:text-white border-transparent'
@@ -223,7 +255,7 @@ export default function App() {
                   {item.label}
                 </span>
                 {item.badge !== null && item.badge !== undefined && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${item.badgeColor}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold tabular-nums ${item.badgeColor}`}>
                     {item.badge}
                   </span>
                 )}
@@ -259,7 +291,7 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 min-w-0 flex flex-col">
         {/* Mobile Top Bar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b border-gray-200 dark:border-[#1c1c1c] px-4 py-3 flex items-center justify-between">
+        <div className="lg:hidden sticky top-0 z-30 bg-white dark:bg-[#0a0a0a] border-b border-gray-200 dark:border-[#1c1c1c] px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setIsSidebarOpen(true)}
@@ -279,26 +311,19 @@ export default function App() {
         </div>
 
         <div className="p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
-          {/* Signature Hero Banner */}
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gray-900 border border-gray-800 shadow-xl">
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
-              <div className="absolute top-0 -left-4 w-56 h-56 bg-blue-600 rounded-full mix-blend-multiply filter blur-2xl animate-blob" />
-              <div className="absolute top-0 -right-4 w-56 h-56 bg-indigo-500 rounded-full mix-blend-multiply filter blur-2xl animate-blob animation-delay-2000" />
-              <div className="absolute -bottom-8 left-24 w-56 h-56 bg-purple-600 rounded-full mix-blend-multiply filter blur-2xl animate-blob animation-delay-4000" />
-            </div>
-
-            <div className="relative z-10 p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          {/* Clean Architectural Header Card (Zero gradients, zero blobs) */}
+          <div className="rounded-2xl bg-gray-900 dark:bg-[#0a0a0a] border border-gray-800 dark:border-[#1c1c1c] overflow-hidden">
+            <div className="p-6 sm:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-semibold text-blue-200 mb-3">
-                  <Brain className="w-3.5 h-3.5" />
-                  Agentic Club & Campus Wellness Coordinator
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-400 mb-1.5">
+                  Campus Club Operations · Track 3
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   Crew Sync Command Center
                 </h2>
                 <p className="text-sm text-gray-300 mt-1.5 max-w-2xl">
-                  Shared visibility across {counts.clubs} campus clubs — sensing event clashes, quiet-club decline,
-                  cross-club collaborations, volunteer overload, and verified post-event reports.
+                  Shared schedule across {counts.clubs} campus clubs — flagging venue clashes, quiet-club decline,
+                  cross-club collaborations, volunteer overload, and verified event reports.
                 </p>
               </div>
 
@@ -306,39 +331,39 @@ export default function App() {
                 <button
                   onClick={handleRunAgent}
                   disabled={runningAgent}
-                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold flex items-center gap-2 shadow-lg shadow-blue-950/50 border border-blue-400/30 transition disabled:opacity-60"
+                  className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold flex items-center gap-2 transition disabled:opacity-60"
                 >
-                  <Sparkles className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`w-4 h-4 ${runningAgent ? 'animate-spin' : ''}`} />
                   {runningAgent ? 'Running Agent...' : 'Run Agent Sync'}
                 </button>
               </div>
             </div>
 
             {/* Live KPI Strip */}
-            <div className="relative z-10 border-t border-white/10 bg-black/25 px-6 sm:px-8 py-3.5 grid grid-cols-2 sm:grid-cols-5 gap-4">
+            <div className="border-t border-gray-800 dark:border-[#1c1c1c] bg-gray-950/60 dark:bg-[#111111] px-6 sm:px-7 py-3.5 grid grid-cols-2 sm:grid-cols-5 gap-4 tabular-nums">
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Scheduled Events</p>
-                <p className="text-lg font-extrabold text-white">{counts.scheduledEvents}</p>
+                <p className="text-lg font-bold text-white">{counts.scheduledEvents}</p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Active Clashes</p>
-                <p className={`text-lg font-extrabold ${counts.clashes > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                <p className={`text-lg font-bold ${counts.clashes > 0 ? 'text-orange-400' : 'text-emerald-400'}`}>
                   {counts.clashes}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Quiet Clubs</p>
-                <p className={`text-lg font-extrabold ${counts.quietClubs > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                <p className={`text-lg font-bold ${counts.quietClubs > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
                   {counts.quietClubs}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Open Roles</p>
-                <p className="text-lg font-extrabold text-blue-300">{counts.openVolunteerRoles}</p>
+                <p className="text-lg font-bold text-sky-400">{counts.openVolunteerRoles}</p>
               </div>
               <div>
                 <p className="text-[11px] text-gray-400 font-medium">Pending Approvals</p>
-                <p className="text-lg font-extrabold text-indigo-300">{pendingCount}</p>
+                <p className="text-lg font-bold text-blue-400">{pendingCount}</p>
               </div>
             </div>
           </div>

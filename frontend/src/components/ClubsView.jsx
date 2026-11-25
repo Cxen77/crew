@@ -1,5 +1,14 @@
 import React from 'react';
-import { Activity, AlertCircle, CalendarClock, MessageSquare, Moon, TrendingDown, TrendingUp, Users } from 'lucide-react';
+import {
+  Activity,
+  AlertCircle,
+  CalendarClock,
+  MessageSquare,
+  Moon,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 
 export default function ClubsView({ clubs = [], onNavigateTab }) {
   const sorted = [...clubs].sort((a, b) => {
@@ -21,9 +30,9 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
           return (
             <div
               key={club._id}
-              className={`rounded-2xl border p-5 transition-all flex flex-col justify-between ${
+              className={`rounded-2xl border p-5 transition-colors flex flex-col justify-between ${
                 isQuiet
-                  ? 'border-amber-300 dark:border-amber-800/70 bg-gray-100/70 dark:bg-[#111111]'
+                  ? 'border-amber-300 dark:border-amber-800/70 bg-gray-100/80 dark:bg-[#111111]'
                   : 'border-gray-200 dark:border-[#1c1c1c] bg-white dark:bg-[#0a0a0a] hover:border-blue-200 dark:hover:border-blue-900/50'
               }`}
             >
@@ -56,9 +65,9 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                   <div className="flex items-center justify-between text-xs mb-1">
                     <span className="font-medium text-gray-500 dark:text-gray-400">Club Health Score</span>
                     <span
-                      className={`font-bold ${
+                      className={`font-bold tabular-nums ${
                         score < 50
-                          ? 'text-red-600 dark:text-red-400'
+                          ? 'text-orange-600 dark:text-orange-400'
                           : score < 75
                           ? 'text-amber-600 dark:text-amber-400'
                           : 'text-emerald-600 dark:text-emerald-400'
@@ -70,7 +79,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                   <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-[#1f1f1f] overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
-                        score < 50 ? 'bg-red-500' : score < 75 ? 'bg-amber-500' : 'bg-emerald-500'
+                        score < 50 ? 'bg-orange-500' : score < 75 ? 'bg-amber-500' : 'bg-emerald-500'
                       }`}
                       style={{ width: `${score}%` }}
                     />
@@ -78,7 +87,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                 </div>
 
                 {/* Telemetry Grid */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="grid grid-cols-3 gap-2 mb-4 tabular-nums">
                   <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-[#141414] border border-gray-100 dark:border-[#1c1c1c]">
                     <div className="flex items-center gap-1 text-[10px] text-gray-400 font-medium">
                       <CalendarClock className="w-3 h-3" /> Last Event
@@ -86,7 +95,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                     <p
                       className={`text-xs font-bold mt-1 ${
                         (h.daysSinceLastEvent ?? 0) >= 60
-                          ? 'text-red-600 dark:text-red-400'
+                          ? 'text-orange-600 dark:text-orange-400'
                           : 'text-gray-900 dark:text-white'
                       }`}
                     >
@@ -97,7 +106,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                   <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-[#141414] border border-gray-100 dark:border-[#1c1c1c]">
                     <div className="flex items-center gap-1 text-[10px] text-gray-400 font-medium">
                       {isFalling ? (
-                        <TrendingDown className="w-3 h-3 text-red-500" />
+                        <TrendingDown className="w-3 h-3 text-orange-500" />
                       ) : (
                         <TrendingUp className="w-3 h-3 text-emerald-500" />
                       )}
@@ -105,7 +114,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                     </div>
                     <p
                       className={`text-xs font-bold mt-1 ${
-                        isFalling ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'
+                        isFalling ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white'
                       }`}
                     >
                       {h.startMemberCount ?? club.memberCount} → {h.currentMemberCount ?? club.memberCount}
@@ -127,7 +136,7 @@ export default function ClubsView({ clubs = [], onNavigateTab }) {
                   {(club.tags || []).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50/70 dark:bg-[#161616] text-blue-700 dark:text-gray-300 border border-blue-100/80 dark:border-[#262626]"
+                      className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 dark:bg-[#161616] text-blue-700 dark:text-gray-300 border border-blue-100 dark:border-[#262626]"
                     >
                       #{tag}
                     </span>
