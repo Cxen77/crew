@@ -9,6 +9,7 @@ import {
   History,
   LayoutGrid,
   Menu,
+  MessageSquare,
   Moon,
   RefreshCw,
   RotateCcw,
@@ -34,6 +35,7 @@ import ClubsView from './components/ClubsView';
 import VolunteerView from './components/VolunteerView';
 import ReportView from './components/ReportView';
 import DecisionLogView from './components/DecisionLogView';
+import ChatView from './components/ChatView';
 import AddEventModal from './components/AddEventModal';
 
 export default function App() {
@@ -169,6 +171,7 @@ export default function App() {
       icon: History,
       badge: decisions.length > 0 ? decisions.length : null,
     },
+    { id: 'chat', label: 'Agent Chat', icon: MessageSquare, badge: null },
   ];
 
   const isDark =
@@ -369,6 +372,8 @@ export default function App() {
                 {activeTab === 'reports' && <ReportView onReportGenerated={loadAll} />}
 
                 {activeTab === 'decisions' && <DecisionLogView decisions={decisions} />}
+
+                {activeTab === 'chat' && <ChatView />}
               </>
             )}
           </div>

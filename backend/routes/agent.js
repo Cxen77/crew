@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 import DecisionLog from '../models/DecisionLog.js';
 import { getLLMStatus } from '../agent/llm.js';
 import { runAgentCycle, senseCampusState, executeDecision } from '../agent/orchestrator.js';
+import { answerCoordinatorQuestion } from '../agent/chat.js';
 import { seedDatabase } from '../seed/seedDemoData.js';
 
 const router = express.Router();
@@ -75,6 +76,16 @@ router.post(
 
     const updated = await executeDecision(req.params.id, action, decidedBy || 'Campus Coordinator');
     res.json(updated);
+  })
+);
+
+// POST /api/agent/chat — natural-language Q&A grounded on live DB + AI intent decider
+router.post(
+  '/chat',
+  asyncHandler(async (req, res) => {
+    const { message } = req.body;
+    const result = await answerCoordinatorQuestion(message);
+    res.json(result);
   })
 );
 

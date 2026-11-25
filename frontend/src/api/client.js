@@ -30,6 +30,11 @@ export async function submitDecision(id, action, decidedBy = 'Campus Coordinator
   return data;
 }
 
+export async function askAgentChat(message) {
+  const { data } = await api.post('/agent/chat', { message });
+  return data;
+}
+
 export async function fetchEvents() {
   const { data } = await api.get('/events');
   return data;
