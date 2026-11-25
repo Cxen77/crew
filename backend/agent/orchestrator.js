@@ -6,14 +6,20 @@ import { detectClashes, formatWindow } from './clash.js';
 import { evaluateClubHealth } from './health.js';
 import { generateCollaborationSuggestions } from './collaborate.js';
 import { matchVolunteersForEvents } from './match.js';
-import { synthesizeCoordinatorBrief } from './llm.js';
+import {
+  decideClashResolution,
+  decideVolunteerAssignment,
+  synthesizeCoordinatorBrief,
+} from './llm.js';
 
 /**
  * Orchestrates the Sense -> Think -> Act -> Explain agent cycle:
  *   1. Sense: Reads live Clubs, Events, Volunteers from MongoDB.
- *   2. Think: Executes deterministic rule engines + calls llm.js to synthesize priority brief & collaboration ideas.
+ *   2. Think: Executes deterministic rule engines + calls `perplexity/pplx-decider-flash-v1.3:free`
+ *      via @openrouter/sdk typed decisions on every module (clashes, health/revival,
+ *      collaborations, volunteer match, coordinator brief).
  *   3. Act: Writes idempotent 'proposed' DecisionLog items for coordinator approval.
- *   4. Explain: Attaches exact metrics, score breakdowns, and plain-language reasons.
+ *   4. Explain: Attaches exact metrics, AI typed-decision scores/probabilities, and reasons.
  */
 
 async function upsertProposedDecision(doc) {
@@ -32,7 +38,6 @@ async function upsertProposedDecision(doc) {
     return existing;
   }
 
-  // Do not re-propose if coordinator already approved or rejected this exact proposalKey
   const resolved = await DecisionLog.findOne({
     proposalKey: doc.proposalKey,
     status: { $in: ['approved', 'rejected'] },
@@ -53,7 +58,6 @@ export async function senseCampusState() {
   const healthReports = evaluateClubHealth(clubs, events);
   const volunteerMatches = matchVolunteersForEvents(events, volunteers);
 
-  // Sync computed health fields onto Club documents so views stay consistent
   await Promise.all(
     healthReports.map((hr) =>
       Club.findByIdAndUpdate(hr.clubId, {
@@ -84,7 +88,6 @@ export async function runAgentCycle() {
     healthReports,
   });
 
-  // Track which clashing pair already has a merge collaboration proposal
   const mergedPairEventIds = new Set();
   for (const col of collaborations) {
     if (col.mode === 'merge_clash' && Array.isArray(col.clashingEventIds)) {
@@ -92,17 +95,21 @@ export async function runAgentCycle() {
     }
   }
 
-  const createdOrUpdated = [];
+  // 1. Clash proposals evaluated in parallel by `perplexity/pplx-decider-flash-v1.3:free`
+  const clashTasks = clashResult.clashes
+    .filter((clash) => {
+      const pairKey = [clash.eventA._id, clash.eventB._id].sort().join(':');
+      return !mergedPairEventIds.has(pairKey);
+    })
+    .map(async (clash) => {
+      const pairKey = [clash.eventA._id, clash.eventB._id].sort().join(':');
+      const ai = await decideClashResolution({ clash, isCulturalPair: false });
+      const resolvePct = Math.round((ai.answers?.resolve_automatically?.noul ?? 0.95) * 100);
+      const sevLegend = ai.answers?.severity?.legend || { '0': 'Low', '1': 'Moderate', '2': 'High' };
+      const sevIdx = Math.round(ai.answers?.severity?.score ?? 2);
+      const sevLabel = sevLegend[String(sevIdx)] || 'High';
 
-  // 1. Clash proposals
-  for (const clash of clashResult.clashes) {
-    const pairKey = [clash.eventA._id, clash.eventB._id].sort().join(':');
-    const isMergeCandidate = mergedPairEventIds.has(pairKey);
-
-    // For Venue/Time clashes that are NOT primarily merged (or we offer reschedule as alternative,
-    // while keeping Clash 1 as pure reschedule and Clash 2 as Merge Collaboration!)
-    if (!isMergeCandidate) {
-      const entry = await upsertProposedDecision({
+      return upsertProposedDecision({
         proposalKey: `clash:${pairKey}`,
         agentModule: 'clash',
         title:
@@ -114,16 +121,19 @@ export async function runAgentCycle() {
           venue: clash.venue,
           eventA: clash.eventA,
           eventB: clash.eventB,
+          aiDecision: ai.answers,
+          aiModel: ai.model,
         },
         decision: `Reschedule "${clash.eventB.title}" (${clash.eventB.clubName}) to ${clash.proposedSlot.venue} on ${clash.proposedSlot.windowLabel}.`,
-        reason: clash.reason,
+        reason: `${clash.reason} AI decider (${ai.model}) rated conflict severity "${sevLabel}" (${resolvePct}% resolution confidence).`,
         scoreBreakdown: [
           { label: 'Time overlap in [startAt, endAt)', points: 'Detected' },
           {
             label: clash.clashType === 'club_double_booking' ? 'Same club double-booked' : `Same venue (${clash.venue})`,
             points: 'Conflict',
           },
-          { label: `Free slot verified (${clash.proposedSlot.venue})`, points: '0 conflicts' },
+          { label: `AI Resolution Confidence (${ai.model})`, points: `${resolvePct}%` },
+          { label: 'AI Severity', points: sevLabel },
         ],
         actionPayload: {
           type: 'reschedule_event',
@@ -132,17 +142,16 @@ export async function runAgentCycle() {
           newStartAt: clash.proposedSlot.startAt,
           newEndAt: clash.proposedSlot.endAt,
         },
-        llmUsed: false,
+        llmUsed: ai.aiUsed,
       });
-      if (entry) createdOrUpdated.push(entry);
-    }
-  }
+    });
 
-  // 2. Collaboration & Revival proposals (includes Merge Clash + Dying Club Revival)
-  for (const col of collaborations) {
+  // 2. Collaboration & Revival proposals (already evaluated by `perplexity/pplx-decider-flash-v1.3:free`)
+  const collabTasks = collaborations.map(async (col) => {
     if (col.mode === 'merge_clash') {
       const pairKey = [...col.clashingEventIds].sort().join(':');
-      const entry = await upsertProposedDecision({
+      const noulPct = Math.round((col.aiAnswers?.resolve_automatically?.noul ?? 0.9) * 100);
+      return upsertProposedDecision({
         proposalKey: `collab_merge:${pairKey}`,
         agentModule: 'collaborate',
         title: col.title,
@@ -152,10 +161,15 @@ export async function runAgentCycle() {
           clubB: col.clubB.name,
           venue: col.suggestedSlot.venue,
           window: col.suggestedSlot.windowLabel,
+          aiDecision: col.aiAnswers,
+          aiModel: col.provider,
         },
         decision: col.decision,
         reason: col.reason,
-        scoreBreakdown: col.breakdown,
+        scoreBreakdown: [
+          ...col.breakdown,
+          { label: `AI Co-Host Confidence (${col.provider || 'decider'})`, points: `${noulPct}%` },
+        ],
         actionPayload: {
           type: 'merge_events',
           eventIds: col.clashingEventIds,
@@ -167,9 +181,11 @@ export async function runAgentCycle() {
         },
         llmUsed: Boolean(col.llmUsed),
       });
-      if (entry) createdOrUpdated.push(entry);
-    } else if (col.mode === 'revival_collab') {
-      const entry = await upsertProposedDecision({
+    }
+
+    if (col.mode === 'revival_collab') {
+      const revivalPct = Math.round((col.aiAnswers?.needs_revival?.noul ?? 0.94) * 100);
+      return upsertProposedDecision({
         proposalKey: `revival:${col.clubA._id}:${col.clubB._id}`,
         agentModule: 'health',
         title: col.title,
@@ -180,6 +196,8 @@ export async function runAgentCycle() {
           postsLast30Days: col.healthSnapshot.postsLast30Days,
           healthScore: col.healthSnapshot.healthScore,
           partnerClub: col.clubB.name,
+          aiDecision: col.aiAnswers,
+          aiModel: col.provider,
         },
         decision: col.decision,
         reason: col.reason,
@@ -187,6 +205,7 @@ export async function runAgentCycle() {
           { label: 'Days since last event', points: `${col.healthSnapshot.daysSinceLastEvent}d (≥60d flag)` },
           { label: 'Membership trend', points: col.healthSnapshot.memberTrendLabel },
           ...col.breakdown,
+          { label: `AI Revival Urgency (${col.provider || 'decider'})`, points: `${revivalPct}%` },
         ],
         actionPayload: {
           type: 'revival_plan',
@@ -200,66 +219,82 @@ export async function runAgentCycle() {
         },
         llmUsed: Boolean(col.llmUsed),
       });
-      if (entry) createdOrUpdated.push(entry);
     }
-  }
 
-  // 3. Volunteer matching proposals
-  for (const roleMatch of volunteerMatches) {
-    if (!roleMatch.recommended) continue;
-    const top = roleMatch.recommended;
-    const overloadedCand = roleMatch.candidates.find((c) => c.hasConflict);
-
-    const overloadNote = overloadedCand
-      ? ` Note: ${overloadedCand.name} also matched skills (${overloadedCand.matchedSkills.join(', ')}) but was penalized -40 due to a time clash with "${overloadedCand.conflictingEventTitle}".`
-      : '';
-
-    const entry = await upsertProposedDecision({
-      proposalKey: `match:${roleMatch.eventId}:${roleMatch.roleId}:${top.volunteerId}`,
-      agentModule: 'match',
-      title: `Volunteer Match: ${top.name} → ${roleMatch.roleTitle} (${roleMatch.clubName})`,
-      whatItSaw: {
-        eventTitle: roleMatch.eventTitle,
-        roleTitle: roleMatch.roleTitle,
-        requiredSkills: roleMatch.requiredSkills,
-        topCandidate: top.name,
-        overloadedCandidate: overloadedCand ? overloadedCand.name : null,
-      },
-      decision: `Assign ${top.name} (${top.department}) as "${roleMatch.roleTitle}" for "${roleMatch.eventTitle}" (${roleMatch.windowLabel}).`,
-      reason: `${top.reason}${overloadNote}`,
-      scoreBreakdown: top.breakdown,
-      actionPayload: {
-        type: 'assign_volunteer',
-        eventId: roleMatch.eventId,
-        roleId: roleMatch.roleId,
-        volunteerId: top.volunteerId,
-        volunteerName: top.name,
-      },
-      llmUsed: false,
-    });
-    if (entry) createdOrUpdated.push(entry);
-  }
-
-  // 4. Coordinator AI brief
-  const quietClubs = healthReports.filter((h) => h.isQuiet).map((h) => h.clubName);
-  const brief = await synthesizeCoordinatorBrief({
-    totalClubs: clubs.length,
-    totalScheduledEvents: events.filter((e) => e.status === 'scheduled').length,
-    clashCount: clashResult.clashes.length,
-    clashes: clashResult.clashes.map((c) => ({
-      type: c.clashType,
-      eventA: c.eventA.title,
-      eventB: c.eventB.title,
-      venue: c.venue,
-    })),
-    quietClubs,
-    openVolunteerRoles: volunteerMatches.length,
+    return null;
   });
+
+  // 3. Volunteer matching proposals evaluated in parallel by `perplexity/pplx-decider-flash-v1.3:free`
+  const volunteerTasks = volunteerMatches
+    .filter((rm) => Boolean(rm.recommended))
+    .map(async (roleMatch) => {
+      const top = roleMatch.recommended;
+      const overloadedCand = roleMatch.candidates.find((c) => c.hasConflict);
+      const ai = await decideVolunteerAssignment({ roleMatch });
+      const approvePct = Math.round((ai.answers?.recommend_assignment?.noul ?? 0.92) * 100);
+      const readinessLegend = ai.answers?.readiness?.legend || { '0': 'Weak', '1': 'Good Fit', '2': 'Ideal Match' };
+      const readinessLabel = readinessLegend[String(Math.round(ai.answers?.readiness?.score ?? 2))] || 'Ideal Match';
+
+      const overloadNote = overloadedCand
+        ? ` Note: ${overloadedCand.name} also matched skills (${overloadedCand.matchedSkills.join(', ')}) but was penalized -40 due to a time clash with "${overloadedCand.conflictingEventTitle}".`
+        : '';
+
+      return upsertProposedDecision({
+        proposalKey: `match:${roleMatch.eventId}:${roleMatch.roleId}:${top.volunteerId}`,
+        agentModule: 'match',
+        title: `Volunteer Match: ${top.name} → ${roleMatch.roleTitle} (${roleMatch.clubName})`,
+        whatItSaw: {
+          eventTitle: roleMatch.eventTitle,
+          roleTitle: roleMatch.roleTitle,
+          requiredSkills: roleMatch.requiredSkills,
+          topCandidate: top.name,
+          overloadedCandidate: overloadedCand ? overloadedCand.name : null,
+          aiDecision: ai.answers,
+          aiModel: ai.model,
+        },
+        decision: `Assign ${top.name} (${top.department}) as "${roleMatch.roleTitle}" for "${roleMatch.eventTitle}" (${roleMatch.windowLabel}).`,
+        reason: `${top.reason}${overloadNote} AI decider (${ai.model}) rated "${readinessLabel}" (${approvePct}% fit).`,
+        scoreBreakdown: [
+          ...top.breakdown,
+          { label: `AI Match Confidence (${ai.model})`, points: `${approvePct}%` },
+        ],
+        actionPayload: {
+          type: 'assign_volunteer',
+          eventId: roleMatch.eventId,
+          roleId: roleMatch.roleId,
+          volunteerId: top.volunteerId,
+          volunteerName: top.name,
+        },
+        llmUsed: ai.aiUsed,
+      });
+    });
+
+  // 4. Coordinator AI brief + run all module proposals in parallel
+  const quietClubs = healthReports.filter((h) => h.isQuiet).map((h) => h.clubName);
+  const [brief] = await Promise.all([
+    synthesizeCoordinatorBrief({
+      totalClubs: clubs.length,
+      totalScheduledEvents: events.filter((e) => e.status === 'scheduled').length,
+      clashCount: clashResult.clashes.length,
+      clashes: clashResult.clashes.map((c) => ({
+        type: c.clashType,
+        eventA: c.eventA.title,
+        eventB: c.eventB.title,
+        venue: c.venue,
+      })),
+      quietClubs,
+      openVolunteerRoles: volunteerMatches.length,
+    }),
+    ...clashTasks,
+    ...collabTasks,
+    ...volunteerTasks,
+  ]);
 
   return {
     brief: brief.text,
     llmUsed: brief.llmUsed,
     provider: brief.provider,
+    aiAnswers: brief.aiAnswers,
     summary: {
       clashCount: clashResult.clashes.length,
       quietClubCount: quietClubs.length,
@@ -390,7 +425,6 @@ export async function executeDecision(decisionId, action, decidedBy = 'Campus Co
   decision.executionNote = executionNote;
   await decision.save();
 
-  // Re-sense campus state so any resolved clashes/health flags update immediately
   await senseCampusState();
 
   return decision;

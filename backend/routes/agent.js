@@ -3,7 +3,6 @@ import asyncHandler from 'express-async-handler';
 import DecisionLog from '../models/DecisionLog.js';
 import { getLLMStatus } from '../agent/llm.js';
 import { runAgentCycle, senseCampusState, executeDecision } from '../agent/orchestrator.js';
-import { generateCollaborationSuggestions } from '../agent/collaborate.js';
 import { seedDatabase } from '../seed/seedDemoData.js';
 
 const router = express.Router();
@@ -13,12 +12,6 @@ router.get(
   '/status',
   asyncHandler(async (req, res) => {
     const sensed = await senseCampusState();
-    const collaborations = await generateCollaborationSuggestions({
-      clubs: sensed.clubs,
-      events: sensed.events,
-      clashes: sensed.clashResult.clashes,
-      healthReports: sensed.healthReports,
-    });
 
     const [proposedCount, approvedCount, rejectedCount] = await Promise.all([
       DecisionLog.countDocuments({ status: 'proposed' }),
@@ -42,7 +35,6 @@ router.get(
       clashes: sensed.clashResult.clashes,
       clashingEventIds: sensed.clashResult.clashingEventIds,
       healthReports: sensed.healthReports,
-      collaborations,
       volunteerMatches: sensed.volunteerMatches,
     });
   })

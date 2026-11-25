@@ -42,4 +42,4 @@ Dashboard runs on `http://localhost:5173`.
 ## Tools & Frameworks Declared
 - Express, Mongoose, Helmet, CORS, Morgan
 - React, Vite, Tailwind CSS, Framer Motion, Lucide React, React Hot Toast, Axios
-- Optional LLM via `backend/agent/llm.js` (Gemini / OpenAI-compatible APIs configured via `.env`, never hardcoded)
+- `@openrouter/sdk` (`perplexity/pplx-decider-flash-v1.3:free` typed decisions via `OPENROUTER_API_KEY` in `backend/.env`, never hardcoded)

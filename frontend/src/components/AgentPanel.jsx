@@ -69,7 +69,7 @@ export default function AgentPanel({
                   Agent Reasoning Loop (Sense → Think → Act → Explain)
                 </h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-900/50">
-                  {llmInfo?.configured ? `LLM: ${llmInfo.provider}` : 'Tool-Grounded Synthesizer'}
+                  {llmInfo?.configured ? `AI Model: ${llmInfo.model}` : 'Tool-Grounded Synthesizer'}
                 </span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
