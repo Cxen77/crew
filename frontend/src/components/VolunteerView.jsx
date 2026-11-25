@@ -27,7 +27,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
 
         {roleMatches.length === 0 ? (
           <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-8 text-center">
-            <CheckCircle2 className="w-9 h-9 text-emerald-500 mx-auto mb-2.5" />
+            <CheckCircle2 className="w-9 h-9 text-blue-600 mx-auto mb-2.5" />
             <p className="text-sm font-bold text-gray-900 dark:text-white">All event volunteer roles filled</p>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               No unfilled vacancies remain across scheduled events.
@@ -86,7 +86,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                         c.hasConflict
                           ? 'border-gray-300 dark:border-[#2e2e2e] bg-gray-100 dark:bg-[#141414]'
                           : idx === 0
-                          ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20'
+                          ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20'
                           : 'border-gray-100 dark:border-[#1c1c1c] bg-gray-50 dark:bg-[#111111]'
                       }`}
                     >
@@ -105,7 +105,7 @@ export default function VolunteerView({ roleMatches = [], volunteers = [], onNav
                               <AlertTriangle className="w-3 h-3" /> OVERLOADED
                             </span>
                           ) : idx === 0 ? (
-                            <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-[10px] flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-md bg-blue-600 text-white font-bold text-[10px] flex items-center gap-1">
                               <Award className="w-3 h-3" /> BEST FIT
                             </span>
                           ) : null}

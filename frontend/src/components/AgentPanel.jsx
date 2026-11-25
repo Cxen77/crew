@@ -140,7 +140,7 @@ export default function AgentPanel({
       {/* Compact Proposal Cards with Expandable Dropdown */}
       {pendingDecisions.length === 0 ? (
         <div className="bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-[#1c1c1c] rounded-2xl p-10 text-center">
-          <Check className="w-9 h-9 text-emerald-500 mx-auto mb-2.5" />
+          <Check className="w-9 h-9 text-blue-600 mx-auto mb-2.5" />
           <h4 className="text-sm font-bold text-gray-900 dark:text-white">All proposals resolved</h4>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             No pending items in this view. Check the Decision Log for the full audit trail.
